@@ -1,0 +1,10 @@
+{
+  "name": "image-url-signing-service",
+  "version": "0.0.1",
+  "description": "Node TypeScript Service to Sign Gu Image URLs",
+  "main": "index.js",
+  "repository": "https://github.com/guardian/image-url-signing-service",
+  "author": "The Guardian",
+  "license": "MIT",
+  "private": false
+}
