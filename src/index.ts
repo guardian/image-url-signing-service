@@ -10,22 +10,22 @@ app.use(jsonBodyParser());
 
 app.all("/signed-image-url", (req: express.Request, res: express.Response) => {
   // Allow setting of image URL via body or query parameter
-  const url = req.body?.url ? req.body.url : req.query['url'];
+  const url = req.body?.url || req.query["url"];
   if (!url || typeof url != "string" || url.length <= 0) {
     res.status(400);
-    res.send("No URL provided");
+    res.send({ error: "No URL provided" });
     return;
   }
 
   const salt = process.env.SALT;
   if (!salt) {
     res.status(500);
-    res.send("Service incorrectly configured. No salt provided");
+    res.send({ error: "Service incorrectly configured. No salt provided" });
     return;
   }
 
   let profile = {
-    width: 800
+    width: 800,
   };
 
   // Allow setting of image format profile via POST body
@@ -34,8 +34,7 @@ app.all("/signed-image-url", (req: express.Request, res: express.Response) => {
   }
 
   const signedUrl = format(url, salt, profile);
-  res.header("Content-Type", "text/plain");
-  res.send(signedUrl);
+  res.send({ signedUrl });
 });
 
 app.get("/healthcheck", (req: express.Request, res: express.Response) => {
@@ -46,5 +45,5 @@ app.get("/healthcheck", (req: express.Request, res: express.Response) => {
 const PORT = 3232;
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
-  console.log(`Access via http://localhost:${PORT}`)
+  console.log(`Access via http://localhost:${PORT}`);
 });
