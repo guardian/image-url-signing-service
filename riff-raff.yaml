@@ -6,7 +6,7 @@ deployments:
     type: aws-lambda
     contentDirectory: image-url-signing-service
     parameters:
-      bucket: image-url-signing-service-dist
+      bucket: targeting-dist
       fileName: image-url-signing-service.zip
       functions:
         CODE:
