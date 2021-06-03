@@ -15,8 +15,8 @@ deployments:
         PROD:
           filename: image-url-signing-service.zip
           name: image-url-signing-service-PROD-Lambda
-      dependencies:
-        - cloudformation
+    dependencies:
+      - cloudformation
   cloudformation:
     type: cloud-formation
     app: image-url-signing-service
