@@ -4,7 +4,7 @@
     "actions": [
       {
         "action": "image-url-signing-service",
-        "path": "./cfn.yaml",
+        "path": "tmp/lambda",
         "compress": "zip"
       },
       {
