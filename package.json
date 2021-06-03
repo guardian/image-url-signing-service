@@ -22,7 +22,7 @@
     "express": "^4.17.1"
   },
   "devDependencies": {
-    "node-riffraff-artefact": "^2.0.1",
+    "@guardian/node-riffraff-artifact": "^0.2.1",
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/plugin-typescript": "^8.2.1",
@@ -42,6 +42,6 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "test": "jest",
     "compile": "rollup -c rollup.config.js",
-    "deploy": "VERBOSE=true ARTEFACT_PATH=$PWD riffraff-artefact"
+    "deploy": "node-riffraff-artifact"
   }
 }
