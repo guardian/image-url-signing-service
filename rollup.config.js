@@ -4,7 +4,7 @@ import pluginJson from '@rollup/plugin-json';
 import pluginTypescript from '@rollup/plugin-typescript';
 
 export default {
-	input: 'dist/index.js',
+	input: 'src/index.ts',
 	plugins: [
         pluginJson(),
         pluginTypescript(),
