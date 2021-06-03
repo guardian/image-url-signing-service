@@ -8,6 +8,7 @@
   "license": "MIT",
   "private": false,
   "riffraffFile": "./riff-raff.yaml",
+  "isAwsLambda": true,
   "cloudformation": "./cfn.yaml",
   "buildDir": "tmp/lambda",
   "projectName": "targeting:image-url-signing-service",
