@@ -6,8 +6,8 @@ import pluginTypescript from '@rollup/plugin-typescript';
 export default {
 	input: 'dist/index.js',
 	plugins: [
-        pluginTypescript(),
         pluginJson(),
+        pluginTypescript(),
 		nodeResolve({ jsnext: true }),
 		commonjs()
 	],
