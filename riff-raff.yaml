@@ -8,13 +8,6 @@ deployments:
     parameters:
       bucket: targeting-dist
       fileName: image-url-signing-service.zip
-      functions:
-        CODE:
-          filename: image-url-signing-service.zip
-          name: image-url-signing-service-CODE-Lambda
-        PROD:
-          filename: image-url-signing-service.zip
-          name: image-url-signing-service-PROD-Lambda
     dependencies:
       - cloudformation
   cloudformation:
