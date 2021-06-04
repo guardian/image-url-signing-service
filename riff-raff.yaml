@@ -8,7 +8,7 @@ deployments:
     parameters:
       bucket: targeting-dist
       fileName: image-url-signing-service.zip
-      functionNames: image-url-signing-service
+      functionNames: [image-url-signing-service]
     dependencies:
       - cloudformation
   cloudformation:
