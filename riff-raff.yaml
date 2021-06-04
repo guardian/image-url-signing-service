@@ -6,10 +6,15 @@ deployments:
     type: aws-lambda
     contentDirectory: image-url-signing-service
     parameters:
-      prefixStack: true
       bucket: targeting-dist
       fileName: image-url-signing-service.zip
-      functionNames: [image-url-signing-service]
+      functions:
+        CODE:
+          filename: image-url-signing-service.zip
+          name: targeting-CODE-image-url-signing-service-Lambda-w6IwjyB98x88
+        PROD:
+          filename: image-url-signing-service.zip
+          name: image-url-signing-service-PROD-Lambda
     dependencies:
       - cloudformation
   cloudformation:
