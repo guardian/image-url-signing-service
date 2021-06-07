@@ -11,10 +11,10 @@ deployments:
       functions:
         CODE:
           filename: image-url-signing-service.zip
-          name: targeting-CODE-image-url-signing-service-Lambda-w6IwjyB98x88
+          name: image-url-signing-service-CODE
         PROD:
           filename: image-url-signing-service.zip
-          name: image-url-signing-service-PROD-Lambda
+          name: iimage-url-signing-service-PROD
     dependencies:
       - cloudformation
   cloudformation:
