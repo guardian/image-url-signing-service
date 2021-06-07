@@ -100,7 +100,7 @@ Resources:
       Type: AWS::ApiGateway::Method
       Properties:
         AuthorizationType: NONE
-        ApiKeyRequired: true
+        ApiKeyRequired: false
         RestApiId: !Ref ImageSigningApi
         ResourceId: !Ref ImageSigningApiProxyResource
         HttpMethod: ANY
