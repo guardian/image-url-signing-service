@@ -84,7 +84,7 @@ Resources:
     ImageSigningApiUsagePlan:
       Type: AWS::ApiGateway::UsagePlan
       Properties:
-        UsagePlanName: !Sub image-url-signing-service-${Stage}
+        UsagePlanName: !Sub image-url-signing-service
         ApiStages:
           - ApiId: !Ref ImageSigningApi
             Stage: !Ref Stage
