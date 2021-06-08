@@ -17,5 +17,6 @@ if (process.env.LOCAL === "true") {
 }
 
 export const handler = (event: any, context: any) => {
+  console.log("Handler", event, context);
   awsServerlessExpress.proxy(server, event, context);
 };
