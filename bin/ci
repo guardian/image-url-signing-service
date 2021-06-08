@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "TEAMCITY_BRANCH=$TEAMCITY_BRANCH"
+
 set -e
 
 yarn install
