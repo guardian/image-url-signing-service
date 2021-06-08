@@ -1,6 +1,6 @@
 import { config as dotEnvConfig } from "dotenv";
 import { app } from "./app";
-import awsServerlessExpress from "aws-serverless-express";
+import serverlessExpress from '@vendia/serverless-express'
 
 dotEnvConfig();
 
@@ -13,10 +13,10 @@ if (process.env.LOCAL === "true") {
     console.log(`Access via http://localhost:${PORT}`);
   });
 } else {
-  server = awsServerlessExpress.createServer(app);
+  server = serverlessExpress( {app} );
 }
 
 export const handler = (event: any, context: any) => {
   console.log("Handler", event, context);
-  awsServerlessExpress.proxy(server, event, context);
+  server;
 };
