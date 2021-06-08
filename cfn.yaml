@@ -74,7 +74,7 @@ Resources:
             FunctionName: !Sub image-url-signing-service-${Stage}
             Principal: apigateway.amazonaws.com
         DependsOn: ImageSigningApiLambda
-        
+
     ImageSigningApi:
         Type: "AWS::ApiGateway::RestApi"
         Properties:
@@ -84,7 +84,7 @@ Resources:
     ImageSigningApiUsagePlan:
       Type: AWS::ApiGateway::UsagePlan
       Properties:
-        UsagePlanName: image-url-signing-service
+        UsagePlanName: !Sub image-url-signing-service-${Stage}
         ApiStages:
           - ApiId: !Ref ImageSigningApi
             Stage: !Ref Stage
@@ -97,7 +97,7 @@ Resources:
         Properties:
             RestApiId: !Ref ImageSigningApi
             ParentId: !GetAtt [ImageSigningApi, RootResourceId]
-            PathPart: "{proxy+}"
+            PathPart: '{proxy+}'
         DependsOn: ImageSigningApi
 
     ImageSigningApiAnyMethod:
