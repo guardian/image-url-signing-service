@@ -41,7 +41,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "test": "jest",
-    "compile": "tsc",
+    "compile": "tsc && cp package.json dist/package.json && npm install --prefix dist --production",
     "deploy": "node-riffraff-artifact"
   }
 }
