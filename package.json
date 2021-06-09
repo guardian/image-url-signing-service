@@ -41,7 +41,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "test": "jest",
-    "compile": "rollup -c rollup.config.js",
+    "compile": "tsc",
     "deploy": "node-riffraff-artifact"
   }
 }
