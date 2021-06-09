@@ -1,0 +1,27 @@
+{
+  "entries": {
+    "tap": {
+      "guardian/devtools": {
+        "revision": "2a8965a6a421e83e80c51854715c4bce1e094340"
+      }
+    },
+    "brew": {
+      "guardian/devtools/dev-nginx": {
+        "version": "1.2.0",
+        "bottle": false
+      }
+    }
+  },
+  "system": {
+    "macos": {
+      "big_sur": {
+        "HOMEBREW_VERSION": "3.1.9",
+        "HOMEBREW_PREFIX": "/usr/local",
+        "Homebrew/homebrew-core": "799d01d4ff641337cb60430174091d6e33cb888a",
+        "CLT": "12.4.0.0.1.1610135815",
+        "Xcode": "12.5",
+        "macOS": "11.2.3"
+      }
+    }
+  }
+}
