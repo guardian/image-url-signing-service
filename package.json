@@ -44,6 +44,6 @@
     "prebuild": "rm -rf dist",
     "build": "tsc",
     "postbuild": "./bin/package",
-    "deploy": "node-riffraff-artifact"
+    "riffraff": "node-riffraff-artifact"
   }
 }
