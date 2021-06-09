@@ -35,8 +35,7 @@ app.all("/signed-image-url", (req: express.Request, res: express.Response) => {
 });
 
 app.get("/healthcheck", (req: express.Request, res: express.Response) => {
-  res.header("Content-Type", "text/plain");
-  res.send("OK");
+  res.status(200).json({ status: "OK" });
 });
 
 
