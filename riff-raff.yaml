@@ -14,7 +14,7 @@ deployments:
           name: image-url-signing-service-CODE
         PROD:
           filename: image-url-signing-service.zip
-          name: iimage-url-signing-service-PROD
+          name: image-url-signing-service-PROD
     dependencies:
       - cloudformation
   cloudformation:
