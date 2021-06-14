@@ -8,6 +8,12 @@ import { REGION, SETTINGS_FILE } from "./environment";
 export const app = express();
 app.use(jsonBodyParser());
 
+function getPanda() {
+  const SETTINGS_BUCKET = "pan-domain-auth-settings";
+  const panda = new PanDomainAuthentication('gutoolsAuth-assym', REGION, SETTINGS_BUCKET, SETTINGS_FILE, guardianValidation);
+  return panda;
+}
+
 app.all("/signed-image-url", (req: express.Request, res: express.Response) => {
   // Allow setting of image URL via body or query parameter
   const url = req.body?.url || req.query["url"];
@@ -33,17 +39,28 @@ app.all("/signed-image-url", (req: express.Request, res: express.Response) => {
     profile = req.body.profile;
   }
 
-  const signedUrl = format(url, salt, profile);
-  res.send({ signedUrl });
+  const panda = getPanda();
+  panda.verify(req.headers.cookie || "").then((panAuthResult) => {
+    if (panAuthResult.status === 'Authorised') {
+      try {
+        const signedUrl = format(url, salt, profile);
+        res.send({ signedUrl });
+      } catch (ex) {
+        res.status(500).send({ error: "Error signing url", ex: ex });
+      }
+    } else {
+      res.status(403).send({ error: "Not authorised by pan-domain login" }); 
+    }
+  }).catch((ex) => {
+    res.status(500).send({ error: "Pan domain auth error", ex: ex });
+  });
+
+  
 });
 
 app.get("/pandacheck", (req: express.Request, res: express.Response) => {
-  const SETTINGS_BUCKET = "pan-domain-auth-settings";
-  const panda = new PanDomainAuthentication('gutoolsAuth-assym', REGION, SETTINGS_BUCKET, SETTINGS_FILE, guardianValidation);
-
-  const cookieString = req.headers && req.headers.cookie ? req.headers.cookie : "";
-
-  panda.verify(cookieString).then(({ status, user }) => {
+  const panda = getPanda();
+  panda.verify(req.headers.cookie || "").then(({ status, user }) => {
 		if (status === 'Authorised') {
 			// TODO MRB: remove once @guardian/pan-domain-node supports an API not including the refresher
 			panda.stop();
