@@ -3,6 +3,7 @@ import { format } from "@guardian/image";
 import { json as jsonBodyParser } from "body-parser";
 import { guardianValidation, PanDomainAuthentication } from '@guardian/pan-domain-node';
 import { ResourceGroups } from "aws-sdk";
+import { REGION, SETTINGS_FILE } from "./environment";
 
 export const app = express();
 app.use(jsonBodyParser());
@@ -37,9 +38,7 @@ app.all("/signed-image-url", (req: express.Request, res: express.Response) => {
 });
 
 app.get("/pandacheck", (req: express.Request, res: express.Response) => {
-  const REGION = process.env.REGION || "eu-west-1";
-  const SETTINGS_FILE = process.env.PANDA_SETTINGS_FILE || "panda.settings";
-  const SETTINGS_BUCKET = process.env.PANDA_SETTINGS_BUCKET || "image-url-signing-panda-settings";
+  const SETTINGS_BUCKET = "pan-domain-auth-settings";
   const panda = new PanDomainAuthentication('gutoolsAuth-assym', REGION, SETTINGS_BUCKET, SETTINGS_FILE, guardianValidation);
 
   const cookieString = req.headers && req.headers.cookie ? req.headers.cookie : "";
