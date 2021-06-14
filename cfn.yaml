@@ -150,3 +150,11 @@ Resources:
         Properties:
             DomainName: !FindInMap ["DomainNames", !Ref Stage, "Name"]
             CertificateArn: !Ref TLSCert
+
+    ImageSigningApiMapping:
+        Type: AWS::ApiGatewayV2::ApiMapping
+        Properties:
+            ApiId: !Ref ImageSigningApi
+            DomainName: !FindInMap ["DomainNames", !Ref Stage, "Name"]
+            Stage: !Ref Stage
+            
