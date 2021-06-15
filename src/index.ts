@@ -1,8 +1,10 @@
 import { config as dotEnvConfig } from "dotenv";
-import { app } from "./app";
+import { buildApp } from "./app";
 import serverlessExpress from '@vendia/serverless-express'
 
 dotEnvConfig();
+
+const app = buildApp();
 
 if (process.env.LOCAL === "true") {
   const PORT = 3232;
