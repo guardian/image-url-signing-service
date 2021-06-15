@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@guardian/node-riffraff-artifact": "^0.2.1",
+    "@guardian/prettier": "^0.6.0",
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/plugin-typescript": "^8.2.1",
@@ -32,6 +33,7 @@
     "@types/jest": "^26.0.23",
     "@types/supertest": "^2.0.11",
     "jest": "^27.0.1",
+    "prettier": "^2.3.1",
     "rollup": "^2.50.5",
     "supertest": "^6.1.3",
     "ts-jest": "^27.0.3",
@@ -45,6 +47,8 @@
     "prebuild": "rm -rf dist",
     "build": "tsc",
     "postbuild": "./bin/package",
-    "riffraff": "node-riffraff-artifact"
+    "riffraff": "node-riffraff-artifact",
+    "prettier:check": "prettier . --check",
+    "prettier:fix": "prettier . --write"
   }
 }
