@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment -- For mocking and body access */
+/* eslint-disable @typescript-eslint/unbound-method -- This rule is broken for method references */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- For body access which is always any */
 import type { PanDomainAuthentication } from '@guardian/pan-domain-node';
-import type { Express } from 'express-serve-static-core';
+import type { Express } from 'express';
 import request from 'supertest';
 import { buildApp } from './app';
 
@@ -21,14 +24,21 @@ describe('Image signing service', () => {
 
 	beforeEach(() => {
 		mockPanda = {
-			verify: jest.fn(async (cookie) => {
+			verify: jest.fn((cookie) => {
 				if (cookie == mockValidCookie) {
-					return { status: 'Authorised', user: mockUser };
+					return Promise.resolve({
+						status: 'Authorised',
+						user: mockUser,
+					});
 				} else {
-					return { status: 'Not Authorised' };
+					return Promise.resolve({
+						status: 'Not Authorised',
+						user: null,
+					});
 				}
 			}),
 			stop: jest.fn(),
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- For mocking
 		} as any;
 		app = buildApp(() => mockPanda);
 		process.env.SALT = 'fake';

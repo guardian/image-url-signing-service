@@ -5,7 +5,13 @@ import {
 } from '@guardian/pan-domain-node';
 import { json as jsonBodyParser } from 'body-parser';
 import express from 'express';
+import type { Express } from 'express';
 import { REGION, SETTINGS_FILE } from './environment';
+
+interface SignedImageUrlBody {
+	url?: string;
+	profile?: { width?: number; height?: number };
+}
 
 function getPanDomainAuth() {
 	const SETTINGS_BUCKET = 'pan-domain-auth-settings';
@@ -20,12 +26,13 @@ function getPanDomainAuth() {
 }
 
 function getCookieString(req: express.Request) {
-	return '' + (req.headers.cookie || req.headers.Cookie || '');
+	const maybeList = req.headers.cookie ?? req.headers.Cookie ?? '';
+	return Array.isArray(maybeList) ? maybeList.join('') : maybeList;
 }
 
 export function buildApp(
 	getPanda: () => PanDomainAuthentication = getPanDomainAuth,
-) {
+): Express {
 	const app = express();
 	app.use(jsonBodyParser());
 
@@ -33,7 +40,8 @@ export function buildApp(
 		'/signed-image-url',
 		(req: express.Request, res: express.Response) => {
 			// Allow setting of image URL via body or query parameter
-			const url = req.body?.url || req.query['url'];
+			const body = req.body as SignedImageUrlBody | undefined;
+			const url = body?.url ?? req.query['url'];
 			if (!url || typeof url != 'string' || url.length <= 0) {
 				res.status(400);
 				res.send({ error: 'No URL provided' });
@@ -49,14 +57,7 @@ export function buildApp(
 				return;
 			}
 
-			let profile = {
-				width: 800,
-			};
-
-			// Allow setting of image format profile via POST body
-			if (req.body?.profile) {
-				profile = req.body.profile;
-			}
+			const profile = body?.profile ?? { width: 400 };
 
 			const panda = getPanda();
 			panda
@@ -66,7 +67,7 @@ export function buildApp(
 						try {
 							const signedUrl = format(url, salt, profile);
 							res.send({ signedUrl });
-						} catch (ex) {
+						} catch (ex: unknown) {
 							res.status(500).send({
 								error: 'Error signing url',
 								ex: ex,
@@ -78,7 +79,7 @@ export function buildApp(
 						});
 					}
 				})
-				.catch((ex) => {
+				.catch((ex: unknown) => {
 					res.status(500).send({
 						error: 'Pan domain auth error',
 						ex: ex,
@@ -94,7 +95,7 @@ export function buildApp(
 			.then((result) => {
 				res.send(result);
 			})
-			.catch((ex) => {
+			.catch((ex: unknown) => {
 				console.error('pan-domain-node error ', ex);
 				res.status(500).send({ error: 'pan-domain-node error', ex });
 			})

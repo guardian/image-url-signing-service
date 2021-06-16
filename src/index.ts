@@ -14,4 +14,5 @@ if (process.env.LOCAL === 'true') {
 	});
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Required for Lambda to work
 exports.handler = serverlessExpress({ app });
