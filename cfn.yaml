@@ -149,6 +149,9 @@ Resources:
       Properties:
         DomainName: !FindInMap ["DomainNames", !Ref Stage, "Name"]
         CertificateArn: !Ref TLSCert
+        EndpointConfiguration:
+          Types:
+            - REGIONAL
 
   ImageSigningApiMapping:
       Type: AWS::ApiGatewayV2::ApiMapping
