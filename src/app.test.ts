@@ -99,26 +99,23 @@ describe('Image signing service', () => {
 			expect(res.status).toEqual(403);
 			expect(mockPanda.verify).toHaveBeenCalled();
 		});
+	});
 
-  });
+	describe('/healthcheck', () => {
+		it('returns stage CODE in CODE lambda', async () => {
+			process.env.AWS_LAMBDA_FUNCTION_NAME =
+				'image-url-signing-service-CODE';
+			const res = await request(app).get('/healthcheck');
+			expect(res.status).toEqual(200);
+			expect(res.body.stage).toEqual('CODE');
+		});
 
-  describe("/healthcheck", () => {
-
-    it("returns stage CODE in CODE lambda", async () => {
-      process.env.AWS_LAMBDA_FUNCTION_NAME = "image-url-signing-service-CODE";
-      const res = await request(app)
-        .get("/healthcheck");
-      expect(res.status).toEqual(200);
-      expect(res.body.stage).toEqual("CODE");
-    });
-
-    it("returns stage PROD in PROD lambda", async () => {
-      process.env.AWS_LAMBDA_FUNCTION_NAME = "image-url-signing-service-PROD";
-      const res = await request(app)
-        .get("/healthcheck");
-      expect(res.status).toEqual(200);
-      expect(res.body.stage).toEqual("PROD");
-    });
-		
+		it('returns stage PROD in PROD lambda', async () => {
+			process.env.AWS_LAMBDA_FUNCTION_NAME =
+				'image-url-signing-service-PROD';
+			const res = await request(app).get('/healthcheck');
+			expect(res.status).toEqual(200);
+			expect(res.body.stage).toEqual('PROD');
+		});
 	});
 });
