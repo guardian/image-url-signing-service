@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/prefer-nullish-coalescing -- Nullish coalescing would cause bug here */
-const stage = (process.env.AWS_LAMBDA_FUNCTION_NAME || '')
-	.split('-')
-	.filter((token) => /(CODE?|PROD?)/.test(token))
-	.pop();
+export function getStage(): string | undefined {
+	return (process.env.AWS_LAMBDA_FUNCTION_NAME || '')
+		.split('-')
+		.filter((token) => /(CODE?|PROD?)/.test(token))
+		.pop();
+}
 
 function getSettingsFile(stage: string | undefined) {
 	switch (stage) {
@@ -15,5 +17,5 @@ function getSettingsFile(stage: string | undefined) {
 	}
 }
 
-export const SETTINGS_FILE = getSettingsFile(stage);
+export const SETTINGS_FILE = getSettingsFile(getStage());
 export const REGION = process.env.AWS_REGION || 'eu-west-1';

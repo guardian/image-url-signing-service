@@ -99,16 +99,23 @@ describe('Image signing service', () => {
 			expect(res.status).toEqual(403);
 			expect(mockPanda.verify).toHaveBeenCalled();
 		});
+	});
 
-		it('returns not authorised if invalid auth cookie provided', async () => {
-			const urlParam = encodeURI(
-				'https://media.guim.co.uk/273bca7a4a3d0a38886ea9229f7a87a6d63d723c/608_1843_5584_5584/master/5584.jpg',
-			);
-			const res = await request(app)
-				.get('/signed-image-url?url=' + urlParam)
-				.set('Cookie', 'gutoolsAuth-assym=meh');
-			expect(res.status).toEqual(403);
-			expect(mockPanda.verify).toHaveBeenCalled();
+	describe('/healthcheck', () => {
+		it('returns stage CODE in CODE lambda', async () => {
+			process.env.AWS_LAMBDA_FUNCTION_NAME =
+				'image-url-signing-service-CODE';
+			const res = await request(app).get('/healthcheck');
+			expect(res.status).toEqual(200);
+			expect(res.body.stage).toEqual('CODE');
+		});
+
+		it('returns stage PROD in PROD lambda', async () => {
+			process.env.AWS_LAMBDA_FUNCTION_NAME =
+				'image-url-signing-service-PROD';
+			const res = await request(app).get('/healthcheck');
+			expect(res.status).toEqual(200);
+			expect(res.body.stage).toEqual('PROD');
 		});
 	});
 });

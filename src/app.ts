@@ -6,7 +6,7 @@ import {
 import { json as jsonBodyParser } from 'body-parser';
 import express from 'express';
 import type { Express } from 'express';
-import { REGION, SETTINGS_FILE } from './environment';
+import { getStage, REGION, SETTINGS_FILE } from './environment';
 
 interface SignedImageUrlBody {
 	url?: string;
@@ -105,7 +105,7 @@ export function buildApp(
 	});
 
 	app.get('/healthcheck', (req: express.Request, res: express.Response) => {
-		res.status(200).json({ status: 'OK' });
+		res.status(200).json({ status: 'OK', stage: getStage() });
 	});
 
 	return app;
