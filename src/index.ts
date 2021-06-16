@@ -1,6 +1,6 @@
+import serverlessExpress from '@vendia/serverless-express';
 import { config as dotEnvConfig } from 'dotenv';
 import { buildApp } from './app';
-import serverlessExpress from '@vendia/serverless-express';
 
 dotEnvConfig();
 

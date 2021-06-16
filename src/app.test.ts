@@ -1,12 +1,12 @@
-import { PanDomainAuthentication } from '@guardian/pan-domain-node';
-import { Express } from 'express-serve-static-core';
+import type { PanDomainAuthentication } from '@guardian/pan-domain-node';
+import type { Express } from 'express-serve-static-core';
 import request from 'supertest';
 import { buildApp } from './app';
 
 describe('Image signing service', () => {
 	let app: Express;
 	let mockPanda: PanDomainAuthentication;
-	let mockUser = {
+	const mockUser = {
 		firstName: 'Michael',
 		lastName: 'Clapham',
 		email: 'michael.clapham@guardian.co.uk',
@@ -17,7 +17,7 @@ describe('Image signing service', () => {
 		expires: 1623698419000,
 		multifactor: true,
 	};
-	let mockValidCookie = 'gutoolsAuth-assym=fakecookie';
+	const mockValidCookie = 'gutoolsAuth-assym=fakecookie';
 
 	beforeEach(() => {
 		mockPanda = {

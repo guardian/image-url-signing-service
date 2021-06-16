@@ -1,10 +1,10 @@
-import express from 'express';
 import { format } from '@guardian/image';
-import { json as jsonBodyParser } from 'body-parser';
 import {
 	guardianValidation,
 	PanDomainAuthentication,
 } from '@guardian/pan-domain-node';
+import { json as jsonBodyParser } from 'body-parser';
+import express from 'express';
 import { REGION, SETTINGS_FILE } from './environment';
 
 function getPanDomainAuth() {
