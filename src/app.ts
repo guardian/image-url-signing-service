@@ -105,7 +105,7 @@ export function buildApp(
 	});
 
 	app.get('/healthcheck', (req: express.Request, res: express.Response) => {
-		res.status(200).json({ status: 'OK' });
+		res.status(200).json({ status: 'OK', stage: getStage() });
 	});
 
 	return app;
