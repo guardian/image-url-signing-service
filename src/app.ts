@@ -57,7 +57,7 @@ export function buildApp(
 				return;
 			}
 
-			const profile = body?.profile ?? { width: 400 };
+			const profile = body?.profile ?? { width: 800 };
 
 			const panda = getPanda();
 			panda

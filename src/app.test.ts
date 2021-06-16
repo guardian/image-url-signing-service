@@ -40,8 +40,8 @@ describe('Image signing service', () => {
 			stop: jest.fn(),
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- For mocking
 		} as any;
-		app = buildApp(() => mockPanda);
 		process.env.SALT = 'fake';
+		app = buildApp(() => mockPanda);
 	});
 
 	describe('/userdetails', () => {
