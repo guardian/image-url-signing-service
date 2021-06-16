@@ -1,4 +1,4 @@
 name: image-url-signing-service
 mappings:
-    - prefix: image-url-signing-service
-      port: 3232
+  - prefix: image-url-signing-service
+    port: 3232
