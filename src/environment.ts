@@ -1,9 +1,9 @@
 const stage = (process.env.AWS_LAMBDA_FUNCTION_NAME || '')
 	.split('-')
-	.filter(token => /(CODE?|PROD?)/.test(token))
+	.filter((token) => /(CODE?|PROD?)/.test(token))
 	.pop();
 
-function getSettingsFile (stage: string | undefined) {
+function getSettingsFile(stage: string | undefined) {
 	switch (stage) {
 		case 'PROD':
 			return 'gutools.co.uk.settings.public';

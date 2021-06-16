@@ -1,136 +1,135 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: '2010-09-09'
 Description: Lambda API for signing i.guim.co.uk image urls
 Parameters:
-    Stack:
-        Description: Stack name
-        Type: String
-        Default: targeting
-    App:
-        Description: Application name
-        Type: String
-        Default: image-url-signing-service
-    Stage:
-        Description: Stage name
-        Type: String
-        AllowedValues:
-            - CODE
-            - PROD
-        Default: CODE
-    DeployBucket:
-        Description: Bucket where RiffRaff uploads artifacts on deploy
-        Type: String
-        Default: targeting-dist
+  Stack:
+    Description: Stack name
+    Type: String
+    Default: targeting
+  App:
+    Description: Application name
+    Type: String
+    Default: image-url-signing-service
+  Stage:
+    Description: Stage name
+    Type: String
+    AllowedValues:
+      - CODE
+      - PROD
+    Default: CODE
+  DeployBucket:
+    Description: Bucket where RiffRaff uploads artifacts on deploy
+    Type: String
+    Default: targeting-dist
 Resources:
-    ExecutionRole:
-        Type: AWS::IAM::Role
-        Properties:
-            AssumeRolePolicyDocument:
-                Statement:
-                    - Effect: Allow
-                      Principal:
-                          Service:
-                              - lambda.amazonaws.com
-                      Action: "sts:AssumeRole"
-            Path: /
-            Policies:
-                - PolicyName: logs
-                  PolicyDocument:
-                      Statement:
-                          Effect: Allow
-                          Action:
-                              - "logs:CreateLogGroup"
-                              - "logs:CreateLogStream"
-                              - "logs:PutLogEvents"
-                          Resource: "arn:aws:logs:*:*:*"
-                - PolicyName: lambda
-                  PolicyDocument:
-                      Statement:
-                          Effect: Allow
-                          Action:
-                              - "lambda:InvokeFunction"
-                          Resource: "*"
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: logs
+          PolicyDocument:
+            Statement:
+              Effect: Allow
+              Action:
+                - 'logs:CreateLogGroup'
+                - 'logs:CreateLogStream'
+                - 'logs:PutLogEvents'
+              Resource: 'arn:aws:logs:*:*:*'
+        - PolicyName: lambda
+          PolicyDocument:
+            Statement:
+              Effect: Allow
+              Action:
+                - 'lambda:InvokeFunction'
+              Resource: '*'
 
-    ImageSigningApiLambda:
-        Type: AWS::Lambda::Function
-        Properties:
-            FunctionName:
-                !Sub image-url-signing-service-${Stage}
-            Code:
-                S3Bucket:
-                    Ref: DeployBucket
-                S3Key: !Sub "${Stack}/${Stage}/image-url-signing-service/image-url-signing-service.zip"
-            Description: Sign i.guim.co.uk image urls
-            Handler: index.handler
-            MemorySize: 128
-            Role:
-                "Fn::GetAtt": ["ExecutionRole", "Arn"]
-            Runtime: nodejs14.x
-            Timeout: 60
+  ImageSigningApiLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub image-url-signing-service-${Stage}
+      Code:
+        S3Bucket:
+          Ref: DeployBucket
+        S3Key: !Sub '${Stack}/${Stage}/image-url-signing-service/image-url-signing-service.zip'
+      Description: Sign i.guim.co.uk image urls
+      Handler: index.handler
+      MemorySize: 128
+      Role:
+        'Fn::GetAtt': ['ExecutionRole', 'Arn']
+      Runtime: nodejs14.x
+      Timeout: 60
 
-    ImageSigningLambdaApiPermission:
-        Type: AWS::Lambda::Permission
-        Properties:
-            Action: lambda:invokeFunction
-            FunctionName: !Sub image-url-signing-service-${Stage}
-            Principal: apigateway.amazonaws.com
-        DependsOn: ImageSigningApiLambda
+  ImageSigningLambdaApiPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:invokeFunction
+      FunctionName: !Sub image-url-signing-service-${Stage}
+      Principal: apigateway.amazonaws.com
+    DependsOn: ImageSigningApiLambda
 
-    ImageSigningApi:
-        Type: "AWS::ApiGateway::RestApi"
-        Properties:
-            Description: API for signing i.guim.co.uk image urls
-            Name: !Sub image-url-signing-service-${Stage}
+  ImageSigningApi:
+    Type: 'AWS::ApiGateway::RestApi'
+    Properties:
+      Description: API for signing i.guim.co.uk image urls
+      Name: !Sub image-url-signing-service-${Stage}
 
-    ImageSigningApiUsagePlan:
-      Type: AWS::ApiGateway::UsagePlan
-      Properties:
-        UsagePlanName: image-url-signing-service
-        ApiStages:
-          - ApiId: !Ref ImageSigningApi
-            Stage: !Ref Stage
-      DependsOn:
-        - ImageSigningApi
-        - ImageSigningApiStage
+  ImageSigningApiUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      UsagePlanName: image-url-signing-service
+      ApiStages:
+        - ApiId: !Ref ImageSigningApi
+          Stage: !Ref Stage
+    DependsOn:
+      - ImageSigningApi
+      - ImageSigningApiStage
 
-    ImageSigningApiProxyResource:
-        Type: AWS::ApiGateway::Resource
-        Properties:
-            RestApiId: !Ref ImageSigningApi
-            ParentId: !GetAtt [ImageSigningApi, RootResourceId]
-            PathPart: '{proxy+}'
-        DependsOn: ImageSigningApi
+  ImageSigningApiProxyResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref ImageSigningApi
+      ParentId: !GetAtt [ImageSigningApi, RootResourceId]
+      PathPart: '{proxy+}'
+    DependsOn: ImageSigningApi
 
-    ImageSigningApiAnyMethod:
-      Type: AWS::ApiGateway::Method
-      Properties:
-        AuthorizationType: NONE
-        ApiKeyRequired: false
-        RestApiId: !Ref ImageSigningApi
-        ResourceId: !Ref ImageSigningApiProxyResource
-        HttpMethod: ANY
-        Integration:
-          Type: AWS_PROXY
-          IntegrationHttpMethod: POST # this for the interaction between API Gateway and Lambda and MUST be POST
-          Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ImageSigningApiLambda.Arn}/invocations
-      DependsOn:
-        - ImageSigningApi
-        - ImageSigningApiLambda
-        - ImageSigningApiProxyResource
+  ImageSigningApiAnyMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      ApiKeyRequired: false
+      RestApiId: !Ref ImageSigningApi
+      ResourceId: !Ref ImageSigningApiProxyResource
+      HttpMethod: ANY
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST # this for the interaction between API Gateway and Lambda and MUST be POST
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ImageSigningApiLambda.Arn}/invocations
+    DependsOn:
+      - ImageSigningApi
+      - ImageSigningApiLambda
+      - ImageSigningApiProxyResource
 
-    ImageSigningApiStage:
-        Type: AWS::ApiGateway::Stage
-        Properties:
-            Description: Stage for image-url-signing-service
-            RestApiId: !Ref ImageSigningApi
-            DeploymentId: !Ref ImageSigningApiDeployment
-            StageName: !Sub ${Stage}
-        DependsOn:
-        - ImageSigningApiAnyMethod
+  ImageSigningApiStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      Description: Stage for image-url-signing-service
+      RestApiId: !Ref ImageSigningApi
+      DeploymentId: !Ref ImageSigningApiDeployment
+      StageName: !Sub ${Stage}
+    DependsOn:
+      - ImageSigningApiAnyMethod
 
-    ImageSigningApiDeployment:
-        Type: AWS::ApiGateway::Deployment
-        Properties:
-            Description: Deploys image-url-signing-service into an environment/stage
-            RestApiId: !Ref ImageSigningApi
-        DependsOn:
-          - ImageSigningApiAnyMethod
+  ImageSigningApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      Description: Deploys image-url-signing-service into an environment/stage
+      RestApiId: !Ref ImageSigningApi
+    DependsOn:
+      - ImageSigningApiAnyMethod

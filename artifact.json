@@ -1,16 +1,16 @@
 {
-    "projectName": "targeting:image-url-signing-service",
-    "vcsURL": "https://github.com/guardian/image-url-signing-service",
-    "actions": [
-      {
-        "action": "image-url-signing-service",
-        "path": "dist",
-        "compress": "zip"
-      },
-      {
-        "action": "cloudformation",
-        "path": "./cfn.yaml",
-        "compress": false
-      }
-    ]
-  }
+  "projectName": "targeting:image-url-signing-service",
+  "vcsURL": "https://github.com/guardian/image-url-signing-service",
+  "actions": [
+    {
+      "action": "image-url-signing-service",
+      "path": "dist",
+      "compress": "zip"
+    },
+    {
+      "action": "cloudformation",
+      "path": "./cfn.yaml",
+      "compress": false
+    }
+  ]
+}
