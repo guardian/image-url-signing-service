@@ -2,7 +2,7 @@ import express from "express";
 import { format } from "@guardian/image";
 import { json as jsonBodyParser } from "body-parser";
 import { guardianValidation, PanDomainAuthentication } from '@guardian/pan-domain-node';
-import { REGION, SETTINGS_FILE } from "./environment";
+import { getStage, REGION, SETTINGS_FILE } from "./environment";
 
 function getPanDomainAuth() {
   const SETTINGS_BUCKET = "pan-domain-auth-settings";
@@ -79,7 +79,7 @@ export function buildApp(getPanda: () => PanDomainAuthentication = getPanDomainA
   });
 
   app.get("/healthcheck", (req: express.Request, res: express.Response) => {
-    res.status(200).json({ status: "OK" });
+    res.status(200).json({ status: "OK", stage: getStage() });
   });
 
   return app;

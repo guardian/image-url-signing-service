@@ -34,6 +34,7 @@ describe("Image signing service", () => {
     } as any;
     app = buildApp(() => mockPanda);
     process.env.SALT = "fake";
+	process.env.AWS_LAMBDA_FUNCTION_NAME = "image-url-signing-service-PROD";
   });
 
   describe("/userdetails", () => {
@@ -95,5 +96,25 @@ describe("Image signing service", () => {
     });
 
   });
+
+  describe("/healthcheck", () => {
+
+	it("returns stage CODE in CODE lambda", async () => {
+		process.env.AWS_LAMBDA_FUNCTION_NAME = "image-url-signing-service-CODE";
+		const res = await request(app)
+			.get("/healthcheck");
+		expect(res.status).toEqual(200);
+		expect(res.body.stage).toEqual("CODE");
+	});
+
+	it("returns stage PROD in PROD lambda", async () => {
+		process.env.AWS_LAMBDA_FUNCTION_NAME = "image-url-signing-service-PROD";
+		const res = await request(app)
+			.get("/healthcheck");
+		expect(res.status).toEqual(200);
+		expect(res.body.stage).toEqual("PROD");
+	});
+
+  })
 
 });
