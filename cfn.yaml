@@ -136,24 +136,24 @@ Resources:
     DependsOn:
       - ImageSigningApiAnyMethod
 
-    ImageSigningApiDeployment:
-        Type: AWS::ApiGateway::Deployment
-        Properties:
-            Description: Deploys image-url-signing-service into an environment/stage
-            RestApiId: !Ref ImageSigningApi
-        DependsOn:
-          - ImageSigningApiAnyMethod
+  ImageSigningApiDeployment:
+      Type: AWS::ApiGateway::Deployment
+      Properties:
+        Description: Deploys image-url-signing-service into an environment/stage
+        RestApiId: !Ref ImageSigningApi
+      DependsOn:
+        - ImageSigningApiAnyMethod
 
-    ImageSigningApiCustomDomain:
-        Type: AWS::ApiGateway::DomainName
-        Properties:
-            DomainName: !FindInMap ["DomainNames", !Ref Stage, "Name"]
-            CertificateArn: !Ref TLSCert
+  ImageSigningApiCustomDomain:
+      Type: AWS::ApiGateway::DomainName
+      Properties:
+        DomainName: !FindInMap ["DomainNames", !Ref Stage, "Name"]
+        CertificateArn: !Ref TLSCert
 
-    ImageSigningApiMapping:
-        Type: AWS::ApiGatewayV2::ApiMapping
-        Properties:
-            ApiId: !Ref ImageSigningApi
-            DomainName: !FindInMap ["DomainNames", !Ref Stage, "Name"]
-            Stage: !Ref Stage
+  ImageSigningApiMapping:
+      Type: AWS::ApiGatewayV2::ApiMapping
+      Properties:
+        ApiId: !Ref ImageSigningApi
+        DomainName: !FindInMap ["DomainNames", !Ref Stage, "Name"]
+        Stage: !Ref Stage
 
