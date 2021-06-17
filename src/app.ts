@@ -8,7 +8,7 @@ import express from 'express';
 import type { Express } from 'express';
 import { getStage, REGION, SETTINGS_FILE } from './environment';
 
-interface SignedImageUrlBody {
+interface SignedImageUrlConfig {
 	url?: string;
 	profile?: { width?: number; height?: number };
 }
@@ -30,62 +30,98 @@ function getCookieString(req: express.Request) {
 	return Array.isArray(maybeList) ? maybeList.join('') : maybeList;
 }
 
+function handleImageSigning(
+	config: SignedImageUrlConfig | undefined,
+	getPanda: () => PanDomainAuthentication,
+	req: express.Request,
+	res: express.Response,
+) {
+	const url = config?.url;
+	if (!url || typeof url != 'string' || url.length <= 0) {
+		res.status(400);
+		res.send({ error: 'No URL provided' });
+		return;
+	}
+
+	const salt = process.env.SALT;
+	if (!salt) {
+		res.status(500);
+		res.send({
+			error: 'Service incorrectly configured. No salt provided',
+		});
+		return;
+	}
+
+	const profile = config?.profile ?? { width: 800 };
+
+	try {
+		const signedUrl = format(url, salt, profile);
+		res.send({ signedUrl });
+	} catch (ex: unknown) {
+		res.status(500).send({
+			error: 'Error signing url',
+			ex: ex,
+		});
+	}
+}
+
+function withPandaAuth(
+	getPanda: () => PanDomainAuthentication,
+	req: express.Request,
+	res: express.Response,
+	onSuccess: () => unknown,
+) {
+	const panda = getPanda();
+	panda
+		.verify(getCookieString(req))
+		.then((panAuthResult) => {
+			if (panAuthResult.status === 'Authorised') {
+				onSuccess();
+			} else {
+				res.status(403).send({
+					error: 'Not authorised by pan-domain login',
+				});
+			}
+		})
+		.catch((ex: unknown) => {
+			res.status(500).send({
+				error: 'Pan domain auth error',
+				ex: ex,
+			});
+		});
+}
+
 export function buildApp(
 	getPanda: () => PanDomainAuthentication = getPanDomainAuth,
 ): Express {
 	const app = express();
 	app.use(jsonBodyParser());
 
-	app.all(
+	app.post(
 		'/signed-image-url',
-		(req: express.Request, res: express.Response) => {
-			// Allow setting of image URL via body or query parameter
-			const body = req.body as SignedImageUrlBody | undefined;
-			const url = body?.url ?? req.query['url'];
-			if (!url || typeof url != 'string' || url.length <= 0) {
-				res.status(400);
-				res.send({ error: 'No URL provided' });
-				return;
-			}
+		(req: express.Request, res: express.Response) =>
+			withPandaAuth(getPanda, req, res, () => {
+				handleImageSigning(
+					req.body as SignedImageUrlConfig | undefined,
+					getPanda,
+					req,
+					res,
+				);
+			}),
+	);
 
-			const salt = process.env.SALT;
-			if (!salt) {
-				res.status(500);
-				res.send({
-					error: 'Service incorrectly configured. No salt provided',
-				});
-				return;
-			}
-
-			const profile = body?.profile ?? { width: 800 };
-
-			const panda = getPanda();
-			panda
-				.verify(getCookieString(req))
-				.then((panAuthResult) => {
-					if (panAuthResult.status === 'Authorised') {
-						try {
-							const signedUrl = format(url, salt, profile);
-							res.send({ signedUrl });
-						} catch (ex: unknown) {
-							res.status(500).send({
-								error: 'Error signing url',
-								ex: ex,
-							});
-						}
-					} else {
-						res.status(403).send({
-							error: 'Not authorised by pan-domain login',
-						});
-					}
-				})
-				.catch((ex: unknown) => {
-					res.status(500).send({
-						error: 'Pan domain auth error',
-						ex: ex,
-					});
-				});
-		},
+	app.get(
+		'/signed-image-url',
+		(req: express.Request, res: express.Response) =>
+			withPandaAuth(getPanda, req, res, () => {
+				const config = { url: req.query.url };
+				handleImageSigning(
+					config as SignedImageUrlConfig,
+					getPanda,
+					req,
+					res,
+				);
+			}),
 	);
 
 	app.get('/userdetails', (req: express.Request, res: express.Response) => {
