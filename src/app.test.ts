@@ -44,7 +44,7 @@ describe('Image signing service', () => {
 		app = buildApp(() => mockPanda);
 	});
 
-	describe('/userdetails', () => {
+	describe('GET /userdetails', () => {
 		it('returns user when valid cookie provided', async () => {
 			const res = await request(app)
 				.get('/userdetails')
@@ -55,7 +55,7 @@ describe('Image signing service', () => {
 		});
 	});
 
-	describe('/signed-image-url', () => {
+	describe('GET /signed-image-url', () => {
 		it('responds with an error if no url provided', () => {
 			return request(app)
 				.get('/signed-image-url')
@@ -64,7 +64,7 @@ describe('Image signing service', () => {
 				.expect(400);
 		});
 
-		it('responds with correct i.guim.co.uk url when url provided', async () => {
+		it('responds with correct i.guim.co.uk url when url provided as a query string arg', async () => {
 			const urlParam = encodeURI(
 				'https://media.guim.co.uk/273bca7a4a3d0a38886ea9229f7a87a6d63d723c/608_1843_5584_5584/master/5584.jpg',
 			);
@@ -101,7 +101,58 @@ describe('Image signing service', () => {
 		});
 	});
 
-	describe('/healthcheck', () => {
+	describe('POST /signed-image-url', () => {
+		it('responds with an error if no url provided', () => {
+			return request(app)
+				.post('/signed-image-url')
+				.set('Cookie', mockValidCookie)
+				.expect('Content-Type', /json/)
+				.expect(400);
+		});
+
+		it('responds with correct i.guim.co.uk url when url provided as a query string arg', async () => {
+			const url =
+				'https://media.guim.co.uk/273bca7a4a3d0a38886ea9229f7a87a6d63d723c/608_1843_5584_5584/master/5584.jpg';
+
+			const res = await request(app)
+				.post('/signed-image-url')
+				.send({ url })
+				.set('Cookie', mockValidCookie);
+
+			expect(res.status).toEqual(200);
+			const actualUrl: string = res.body.signedUrl;
+			const expectedUrl =
+				'https://i.guim.co.uk/img/media/273bca7a4a3d0a38886ea9229f7a87a6d63d723c/608_1843_5584_5584/master/5584.jpg?width=800&s=55cbb2fa7c0608af6b0dcd2e6fcc1f58';
+			expect(actualUrl).toBe(expectedUrl);
+		});
+
+		it('passes correct cookie to pan-domain auth library', async () => {
+			const url =
+				'https://media.guim.co.uk/273bca7a4a3d0a38886ea9229f7a87a6d63d723c/608_1843_5584_5584/master/5584.jpg';
+
+			const res = await request(app)
+				.post('/signed-image-url')
+				.send({ url })
+				.set('Cookie', mockValidCookie);
+
+			expect(res.status).toEqual(200);
+			expect(mockPanda.verify).toHaveBeenCalledWith(mockValidCookie);
+		});
+
+		it('returns not authorised if no auth cookie provided', async () => {
+			const url =
+				'https://media.guim.co.uk/273bca7a4a3d0a38886ea9229f7a87a6d63d723c/608_1843_5584_5584/master/5584.jpg';
+
+			const res = await request(app)
+				.post('/signed-image-url')
+				.send({ url });
+
+			expect(res.status).toEqual(403);
+			expect(mockPanda.verify).toHaveBeenCalled();
+		});
+	});
+
+	describe('GET /healthcheck', () => {
 		it('returns stage CODE in CODE lambda', async () => {
 			process.env.AWS_LAMBDA_FUNCTION_NAME =
 				'image-url-signing-service-CODE';
