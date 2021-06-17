@@ -3,6 +3,7 @@ import {
 	guardianValidation,
 	PanDomainAuthentication,
 } from '@guardian/pan-domain-node';
+import type { AuthenticationResult } from '@guardian/pan-domain-node';
 import { json as jsonBodyParser } from 'body-parser';
 import express from 'express';
 import type { Express } from 'express';
@@ -69,14 +70,14 @@ function withPandaAuth(
 	getPanda: () => PanDomainAuthentication,
 	req: express.Request,
 	res: express.Response,
-	onSuccess: () => unknown,
+	onSuccess: (result: AuthenticationResult) => unknown,
 ) {
 	const panda = getPanda();
 	panda
 		.verify(getCookieString(req))
 		.then((panAuthResult) => {
 			if (panAuthResult.status === 'Authorised') {
-				onSuccess();
+				onSuccess(panAuthResult);
 			} else {
 				res.status(403).send({
 					error: 'Not authorised by pan-domain login',
@@ -127,21 +128,11 @@ export function buildApp(
 			}),
 	);
 
-	app.get('/userdetails', (req: express.Request, res: express.Response) => {
-		const panda = getPanda();
-		panda
-			.verify(getCookieString(req))
-			.then((result) => {
-				res.send(result);
-			})
-			.catch((ex: unknown) => {
-				console.error('pan-domain-node error ', ex);
-				res.status(500).send({ error: 'pan-domain-node error', ex });
-			})
-			.finally(() => {
-				panda.stop();
-			});
-	});
+	app.get('/userdetails', (req: express.Request, res: express.Response) =>
+		withPandaAuth(getPanda, req, res, (authResult) => {
+			res.send(authResult);
+		}),
+	);
 
 	app.get('/healthcheck', (req: express.Request, res: express.Response) => {
 		res.status(200).json({ status: 'OK', stage: getStage() });
