@@ -88,6 +88,9 @@ function withPandaAuth(
 				error: 'Pan domain auth error',
 				ex: ex,
 			});
+		})
+		.finally(() => {
+			panda.stop();
 		});
 }
 
