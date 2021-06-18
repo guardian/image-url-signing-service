@@ -1,29 +1,29 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Lambda API for signing i.guim.co.uk image urls
 Parameters:
-    Stack:
-        Description: Stack name
-        Type: String
-        Default: targeting
-    App:
-        Description: Application name
-        Type: String
-        Default: image-url-signing-service
-    Stage:
-        Description: Stage name
-        Type: String
-        AllowedValues:
-            - CODE
-            - PROD
-        Default: CODE
-    DeployBucket:
-        Description: Bucket where RiffRaff uploads artifacts on deploy
-        Type: String
-        Default: targeting-dist
-    TLSCert:
-        Type: String
-        Description: ARN of TLS certificate in US-EAST-1
-        Default: "arn:aws:acm:us-east-1:477621165360:certificate/781a1702-ca2e-4142-8acf-7ce23f52d106"
+  Stack:
+    Description: Stack name
+    Type: String
+    Default: targeting
+  App:
+    Description: Application name
+    Type: String
+    Default: image-url-signing-service
+  Stage:
+    Description: Stage name
+    Type: String
+    AllowedValues:
+      - CODE
+      - PROD
+    Default: CODE
+  DeployBucket:
+    Description: Bucket where RiffRaff uploads artifacts on deploy
+    Type: String
+    Default: targeting-dist
+  TLSCert:
+    Type: String
+    Description: ARN of TLS certificate in US-EAST-1
+    Default: 'arn:aws:acm:us-east-1:477621165360:certificate/781a1702-ca2e-4142-8acf-7ce23f52d106'
 Mappings:
   DomainNames:
     CODE:
@@ -137,26 +137,25 @@ Resources:
       - ImageSigningApiAnyMethod
 
   ImageSigningApiDeployment:
-      Type: AWS::ApiGateway::Deployment
-      Properties:
-        Description: Deploys image-url-signing-service into an environment/stage
-        RestApiId: !Ref ImageSigningApi
-      DependsOn:
-        - ImageSigningApiAnyMethod
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      Description: Deploys image-url-signing-service into an environment/stage
+      RestApiId: !Ref ImageSigningApi
+    DependsOn:
+      - ImageSigningApiAnyMethod
 
   ImageSigningApiCustomDomain:
-      Type: AWS::ApiGateway::DomainName
-      Properties:
-        DomainName: !FindInMap ["DomainNames", !Ref Stage, "Name"]
-        CertificateArn: !Ref TLSCert
-        EndpointConfiguration:
-          Types:
-            - REGIONAL
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: !FindInMap ['DomainNames', !Ref Stage, 'Name']
+      CertificateArn: !Ref TLSCert
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
 
   ImageSigningApiMapping:
-      Type: AWS::ApiGatewayV2::ApiMapping
-      Properties:
-        ApiId: !Ref ImageSigningApi
-        DomainName: !FindInMap ["DomainNames", !Ref Stage, "Name"]
-        Stage: !Ref Stage
-
+    Type: AWS::ApiGatewayV2::ApiMapping
+    Properties:
+      ApiId: !Ref ImageSigningApi
+      DomainName: !FindInMap ['DomainNames', !Ref Stage, 'Name']
+      Stage: !Ref Stage
