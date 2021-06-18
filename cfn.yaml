@@ -154,8 +154,8 @@ Resources:
       CertificateArn: !Ref TLSCert
 
   ImageSigningApiMapping:
-    Type: AWS::ApiGatewayV2::ApiMapping
+    Type: AWS::ApiGateway::BasePathMapping
     Properties:
-      ApiId: !Ref ImageSigningApi
+      RestApiId: !Ref ImageSigningApi
       DomainName: !FindInMap ['DomainNames', !Ref Stage, 'Name']
       Stage: !Ref Stage
