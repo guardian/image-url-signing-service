@@ -5,6 +5,7 @@ import {
 } from '@guardian/pan-domain-node';
 import type { AuthenticationResult } from '@guardian/pan-domain-node';
 import { json as jsonBodyParser } from 'body-parser';
+import cors from 'cors';
 import express from 'express';
 import type { Express } from 'express';
 import { getStage, REGION, SETTINGS_FILE } from './environment';
@@ -99,6 +100,14 @@ export function buildApp(
 	getPanda: () => PanDomainAuthentication = getPanDomainAuth,
 ): Express {
 	const app = express();
+
+	app.use(
+		cors({
+			origin: /\.(dev-)?gutools.co.uk$/,
+			credentials: true,
+		}),
+	);
+
 	app.use(jsonBodyParser());
 
 	app.post(
