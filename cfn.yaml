@@ -89,6 +89,9 @@ Resources:
     Properties:
       Description: API for signing i.guim.co.uk image urls
       Name: !Sub image-url-signing-service-${Stage}
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
 
   ImageSigningApiUsagePlan:
     Type: AWS::ApiGateway::UsagePlan
