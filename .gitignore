@@ -5,3 +5,4 @@ Brewfile.lock.json
 dist
 tmp
 target
+package-lock.json
