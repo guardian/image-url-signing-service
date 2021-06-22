@@ -20,6 +20,16 @@ Parameters:
     Description: Bucket where RiffRaff uploads artifacts on deploy
     Type: String
     Default: targeting-dist
+  TLSCert:
+    Type: String
+    Description: ARN of TLS certificate in US-EAST-1
+    Default: 'arn:aws:acm:us-east-1:477621165360:certificate/781a1702-ca2e-4142-8acf-7ce23f52d106'
+Mappings:
+  DomainNames:
+    CODE:
+      Name: image-url-signing-service.code.dev-gutools.co.uk
+    PROD:
+      Name: image-url-signing-service.gutools.co.uk
 Resources:
   ExecutionRole:
     Type: AWS::IAM::Role
@@ -133,3 +143,16 @@ Resources:
       RestApiId: !Ref ImageSigningApi
     DependsOn:
       - ImageSigningApiAnyMethod
+
+  ImageSigningApiCustomDomain:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: !FindInMap ['DomainNames', !Ref Stage, 'Name']
+      CertificateArn: !Ref TLSCert
+
+  ImageSigningApiMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    Properties:
+      RestApiId: !Ref ImageSigningApi
+      DomainName: !FindInMap ['DomainNames', !Ref Stage, 'Name']
+      Stage: !Ref Stage
