@@ -24,4 +24,3 @@ deployments:
       prependStackToCloudFormationStackName: true
       cloudFormationStackName: image-url-signing-service
       templatePath: cfn.yaml
-          name: image-url-signing-service-PROD
