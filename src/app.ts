@@ -10,6 +10,8 @@ import express from 'express';
 import type { Express } from 'express';
 import { getLoginUrl, getStage, REGION, SETTINGS_FILE } from './environment';
 
+const DEFAULT_WIDTH = 800;
+
 interface SignedImageUrlConfig {
 	url?: string;
 	profile?: { width?: number; height?: number; quality?: number };
@@ -54,7 +56,7 @@ function handleImageSigning(
 		return;
 	}
 
-	const profile = config?.profile ?? { width: 800 };
+	const profile = config?.profile ?? { width: DEFAULT_WIDTH };
 
 	try {
 		const signedUrl = format(url, salt, profile);
@@ -209,7 +211,7 @@ export function buildApp(
 				const config: SignedImageUrlConfig = {
 					url: req.query.url as string,
 					profile: {
-						width: 400,
+						width: DEFAULT_WIDTH,
 					},
 				};
 				if (config.profile && req.query.width) {
