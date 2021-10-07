@@ -8,11 +8,11 @@ import { json as jsonBodyParser } from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import type { Express } from 'express';
-import { getStage, REGION, SETTINGS_FILE } from './environment';
+import { getLoginUrl, getStage, REGION, SETTINGS_FILE } from './environment';
 
 interface SignedImageUrlConfig {
 	url?: string;
-	profile?: { width?: number; height?: number };
+	profile?: { width?: number; height?: number; quality?: number };
 }
 
 function getPanDomainAuth() {
@@ -72,6 +72,7 @@ function withPandaAuth(
 	req: express.Request,
 	res: express.Response,
 	onSuccess: (result: AuthenticationResult) => unknown,
+	onFailure?: () => unknown,
 ) {
 	const panda = getPanda();
 	panda
@@ -80,9 +81,13 @@ function withPandaAuth(
 			if (panAuthResult.status === 'Authorised') {
 				onSuccess(panAuthResult);
 			} else {
-				res.status(403).send({
-					error: 'Not authorised by pan-domain login',
-				});
+				if (onFailure) {
+					onFailure();
+				} else {
+					res.status(403).send({
+						error: 'Not authorised by pan-domain login',
+					});
+				}
 			}
 		})
 		.catch((ex: unknown) => {
@@ -94,6 +99,64 @@ function withPandaAuth(
 		.finally(() => {
 			panda.stop();
 		});
+}
+
+function getUI() {
+	return `
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Image URL Signing Service - UI</title>
+	</head>
+	<body>
+		<h1>Image URL Signing Service - UI</h1>
+		<p>You are logged in</p>
+		<p>Provide an image URL from the grid to get a URL signed by the Fastly image resizing service that can be used in production.</p>
+		<form action="/signed-image-url" method="GET">
+
+			<label for="url">Image URL:</label><br>
+			<input type="text" id="url" name="url" value=""><br><br>
+
+			<label for="width">Width:</label><br>
+			<input type="number" id="width" name="width" value="400"><br><br>
+
+			<label for="height">Height:</label><br>
+			<input type="number" id="height" name="height"><br><br>
+
+			<label for="height">Quality (value between 0 and 100):</label><br>
+			<input type="number" id="quality" name="quality" value="75"><br><br>
+
+			<input type="submit" value="Submit">
+		  </form>
+	</body>
+</html>
+`;
+}
+
+function getRedirectResponse(req: express.Request) {
+	const userHost = req.get('host') ?? '';
+	let returnUrl = `${req.protocol}://${userHost}${req.originalUrl}`;
+	if (returnUrl.includes('localhost')) {
+		returnUrl =
+			'https://image-url-signing-service.local.dev-gutools.co.uk/';
+	}
+	const loginDomain = getLoginUrl(getStage());
+	const encodedReturnUrl = encodeURIComponent(returnUrl);
+	const loginUrl = `${loginDomain}/login?returnUrl=${encodedReturnUrl}`;
+	const loginRedirectHTML = `
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Image URL Signing Service - Redirecting to login...</title>
+		<meta http-equiv="refresh" content="2; URL='${loginUrl}'" />
+	</head>
+	<body>
+		<h1>Image URL Signing Service - Redirecting to login...</h1>
+		<p>You must be logged in to use the Image URL signing service. Redirecting to login...</p>
+	</body>
+</html>
+`;
+	return loginRedirectHTML;
 }
 
 export function buildApp(
@@ -109,6 +172,22 @@ export function buildApp(
 	);
 
 	app.use(jsonBodyParser());
+
+	app.get('/', (req: express.Request, res: express.Response) => {
+		withPandaAuth(
+			getPanda,
+			req,
+			res,
+			() => {
+				res.contentType('html').send(getUI());
+			},
+			() => {
+				res.status(403)
+					.contentType('html')
+					.send(getRedirectResponse(req));
+			},
+		);
+	});
 
 	app.post(
 		'/signed-image-url',
@@ -127,13 +206,28 @@ export function buildApp(
 		'/signed-image-url',
 		(req: express.Request, res: express.Response) =>
 			withPandaAuth(getPanda, req, res, () => {
-				const config = { url: req.query.url };
-				handleImageSigning(
-					config as SignedImageUrlConfig,
-					getPanda,
-					req,
-					res,
-				);
+				const config: SignedImageUrlConfig = {
+					url: req.query.url as string,
+					profile: {
+						width: 400,
+					},
+				};
+				if (config.profile && req.query.width) {
+					config.profile.width = Number.parseInt(
+						req.query.width.toString(),
+					);
+				}
+				if (config.profile && req.query.height) {
+					config.profile.height = Number.parseInt(
+						req.query.height.toString(),
+					);
+				}
+				if (config.profile && req.query.quality) {
+					config.profile.quality = Number.parseInt(
+						req.query.quality.toString(),
+					);
+				}
+				handleImageSigning(config, getPanda, req, res);
 			}),
 	);
 
