@@ -175,7 +175,7 @@ export function buildApp(
 
 	app.use(jsonBodyParser());
 
-	app.get('/', (req: express.Request, res: express.Response) => {
+	const uiHandler = (req: express.Request, res: express.Response) => {
 		withPandaAuth(
 			getPanda,
 			req,
@@ -189,7 +189,10 @@ export function buildApp(
 					.send(getRedirectResponse(req));
 			},
 		);
-	});
+	};
+
+	app.get('/', uiHandler);
+	app.get('/ui', uiHandler);
 
 	app.post(
 		'/signed-image-url',
