@@ -109,6 +109,22 @@ Resources:
       PathPart: '{proxy+}'
     DependsOn: ImageSigningApi
 
+  ImageSigningApiRootAnyMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      ApiKeyRequired: false
+      RestApiId: !Ref ImageSigningApi
+      ResourceId: !GetAtt [ImageSigningApi, RootResourceId]
+      HttpMethod: ANY
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST # this for the interaction between API Gateway and Lambda and MUST be POST
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ImageSigningApiLambda.Arn}/invocations
+    DependsOn:
+      - ImageSigningApi
+      - ImageSigningApiLambda
+
   ImageSigningApiAnyMethod:
     Type: AWS::ApiGateway::Method
     Properties:
