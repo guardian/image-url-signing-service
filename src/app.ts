@@ -193,7 +193,6 @@ export function buildApp(
 	};
 
 	app.get('/', uiHandler);
-	app.get('/ui', uiHandler);
 
 	app.post(
 		'/signed-image-url',
