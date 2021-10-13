@@ -135,7 +135,7 @@ function getUI() {
 `;
 }
 
-function getRedirectResponse(req: express.Request) {
+function getLoginResponse(req: express.Request) {
 	const userHost = req.get('host') ?? '';
 	let returnUrl = `${req.protocol}://${userHost}${req.originalUrl}`;
 	if (returnUrl.includes('localhost')) {
@@ -149,12 +149,13 @@ function getRedirectResponse(req: express.Request) {
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Image URL Signing Service - Redirecting to login...</title>
-		<meta http-equiv="refresh" content="2; URL='${loginUrl}'" />
+		<title>Image URL Signing Service - Not logged in</title>
 	</head>
 	<body>
-		<h1>Image URL Signing Service - Redirecting to login...</h1>
-		<p>You must be logged in to use the Image URL signing service. Redirecting to login...</p>
+		<h1>Image URL Signing Service</h1>
+		<p>You must be logged in to use the Image URL signing service.
+			<a href="${loginUrl}">Click here to login</a>
+		</p>
 	</body>
 </html>
 `;
@@ -186,7 +187,7 @@ export function buildApp(
 			() => {
 				res.status(403)
 					.contentType('html')
-					.send(getRedirectResponse(req));
+					.send(getLoginResponse(req));
 			},
 		);
 	};
