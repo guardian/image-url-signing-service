@@ -17,7 +17,7 @@ function getSettingsFile(stage: string | undefined) {
 	}
 }
 
-export function getLoginUrl(stage: string | undefined) {
+export function getLoginUrl(stage: string | undefined): string {
 	switch (stage) {
 		case 'CODE':
 			return 'https://login.code.dev-gutools.co.uk';

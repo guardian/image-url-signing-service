@@ -185,9 +185,7 @@ export function buildApp(
 				res.contentType('html').send(getUI());
 			},
 			() => {
-				res.status(403)
-					.contentType('html')
-					.send(getLoginResponse(req));
+				res.status(403).contentType('html').send(getLoginResponse(req));
 			},
 		);
 	};
