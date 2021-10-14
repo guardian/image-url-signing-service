@@ -13,6 +13,9 @@ export function getUI(authResult?: AuthenticationResult): string {
 		avatarHtml = `<img id="avatar-img" style="width: 32px; height: 32px; border-radius: 32px;" src="${authResult.user.avatarUrl}">`;
 	}
 
+	const stage = getStage() ?? 'PROD';
+	const lambdaName = `image-url-signing-service-${stage}`;
+
 	return `
 	<!DOCTYPE html>
 	<html>
@@ -63,10 +66,6 @@ export function getUI(authResult?: AuthenticationResult): string {
 				<section id="user-details"><span>You are logged in as ${userNameString}</span>${avatarHtml}</section>
 			</header>
 
-
-
-
-
 			<p>This tool generates urls for the Fastly IO image resizer we use at the guardian. For input, it takes a media.guim url which can be obtained by uploading an image to <a href="https://media.gutools.co.uk">the grid</a> and cropping it (then right click, get image address).</p>
 
 			<p>The output of this tool is an i.guim url which has gone through the resizer and can be used in production.</p>
@@ -77,6 +76,9 @@ export function getUI(authResult?: AuthenticationResult): string {
 
 			<p>To use the resizer, paste your media.guim url into the box below, together width any parameters you'd like. For example, this image url: https://media.guim.co.uk/273bca7a4a3d0a38886ea9229f7a87a6d63d723c/608_1843_5584_5584/master/5584.jpg</p>
 
+			<p>On the backend this uses a Lambda on the account called ${lambdaName}.
+			<a href="https://janus.gutools.co.uk/console?permissionId=ophan-dev&tzOffset=1" target="_blank">Click here to open AWS web console for Ophan account (via Janus)</a>
+			</p>
 			<form id="form" onsubmit="onFormSubmit(event)">
 
 				<label for="url">Image URL:</label><br>
