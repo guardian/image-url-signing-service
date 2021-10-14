@@ -123,8 +123,11 @@ export function buildApp(
 			getPanda,
 			req,
 			res,
-			() => {
-				res.contentType('html').send(getUI());
+			async () => {
+				const panAuthResult = await getPanda().verify(
+					getCookieString(req),
+				);
+				res.contentType('html').send(getUI(panAuthResult));
 			},
 			() => {
 				res.status(403).contentType('html').send(getLoginResponse(req));

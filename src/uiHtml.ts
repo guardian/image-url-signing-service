@@ -1,7 +1,18 @@
+import type { AuthenticationResult } from '@guardian/pan-domain-node';
 import type express from 'express';
 import { getLoginUrl, getStage } from './environment';
 
-export function getUI(): string {
+export function getUI(authResult?: AuthenticationResult): string {
+	let userNameString = '';
+	if (authResult?.user?.firstName && authResult.user.lastName) {
+		userNameString = `${authResult.user.firstName} ${authResult.user.lastName}`;
+	}
+
+	let avatarHtml = '';
+	if (authResult?.user?.avatarUrl) {
+		avatarHtml = `<img id="avatar-img" style="width: 32px; height: 32px; border-radius: 32px;" src="${authResult.user.avatarUrl}">`;
+	}
+
 	return `
 	<!DOCTYPE html>
 	<html>
@@ -28,12 +39,33 @@ export function getUI(): string {
 					margin: 10px;
 					font-size: 20px;
 				}
+
+				header {
+					display: flex;
+					flex-direction: row;
+					justify-content: space-between;
+				}
+
+				#user-details {
+					display: flex;
+					flex-direction: row;
+				}
+
+				#user-details span {
+					padding-top: 12px;
+					padding-right: 12px;
+				}
 			</style>
 		</head>
 		<body>
-			<h1>Image URL Signing Service - UI</h1>
+			<header>
+				<h1>Image URL Signing Service - UI</h1>
+				<section id="user-details"><span>You are logged in as ${userNameString}</span>${avatarHtml}</section>
+			</header>
 
-			<p>You are logged in</p>
+
+
+
 
 			<p>This tool generates urls for the Fastly IO image resizer we use at the guardian. For input, it takes a media.guim url which can be obtained by uploading an image to <a href="https://media.gutools.co.uk">the grid</a> and cropping it (then right click, get image address).</p>
 
