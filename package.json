@@ -48,6 +48,7 @@
   },
   "scripts": {
     "dev": "LOCAL=true ts-node-dev --respawn --transpile-only src/index.ts",
+		"start": "yarn dev",
     "test": "jest",
     "prebuild": "rm -rf dist",
     "build": "tsc",
