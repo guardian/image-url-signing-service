@@ -32,8 +32,19 @@ export function getUI(): string {
 		</head>
 		<body>
 			<h1>Image URL Signing Service - UI</h1>
+
 			<p>You are logged in</p>
-			<p>Provide an image URL from the grid to get a URL signed by the Fastly image resizing service that can be used in production.</p>
+
+			<p>This tool generates urls for the Fastly IO image resizer we use at the guardian. For input, it takes a media.guim url which can be obtained by uploading an image to <a href="https://media.gutools.co.uk">the grid</a> and cropping it (then right click, get image address).</p>
+
+			<p>The output of this tool is an i.guim url which has gone through the resizer and can be used in production.</p>
+
+			<p>The advantage of using the resizer is that images are smaller and you can request an exact width. There's quite a bit of other functionality available - see <a href="https://docs.fastly.com/api/imageopto/">https://docs.fastly.com/api/imageopto/</a> for the full API reference.</p>
+
+			<p>The reason this tool needs to exist is that to prevent denial of service attacks we sign the image URLs that use the resizer to prevent a potential attacker e.g. requesting the same image in 200 different widths.</p>
+
+			<p>To use the resizer, paste your media.guim url into the box below, together width any parameters you'd like. For example, this image url: https://media.guim.co.uk/273bca7a4a3d0a38886ea9229f7a87a6d63d723c/608_1843_5584_5584/master/5584.jpg</p>
+
 			<form id="form" onsubmit="onFormSubmit(event)">
 
 				<label for="url">Image URL:</label><br>
