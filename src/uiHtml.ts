@@ -1,0 +1,117 @@
+import type express from 'express';
+import { getLoginUrl, getStage } from './environment';
+
+export function getUI(): string {
+	return `
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Image URL Signing Service - UI</title>
+			<style>
+				body {
+					font-family: sans-serif;
+				}
+
+				input[type=text], input[type=number] {
+					margin: 10px;
+					width: calc(100% - 30px);
+					font-size: 20px;
+				}
+
+				label {
+					margin: 10px;
+					width: 100%;
+					font-size: 20px;
+				}
+
+				input[type=submit] {
+					margin: 10px;
+					font-size: 20px;
+				}
+			</style>
+		</head>
+		<body>
+			<h1>Image URL Signing Service - UI</h1>
+			<p>You are logged in</p>
+			<p>Provide an image URL from the grid to get a URL signed by the Fastly image resizing service that can be used in production.</p>
+			<form id="form" onsubmit="onFormSubmit(event)">
+
+				<label for="url">Image URL:</label><br>
+				<input type="text" id="url" name="url" value=""><br><br>
+
+				<label for="width">Width:</label><br>
+				<input type="number" id="width" name="width" value="400"><br><br>
+
+				<label for="height">Height:</label><br>
+				<input type="number" id="height" name="height"><br><br>
+
+				<label for="height">Quality (value between 0 and 100):</label><br>
+				<input type="number" id="quality" name="quality" value="75"><br><br>
+
+				<input type="submit" value="Submit">
+			  </form>
+			  <input id="result-text" type="text" readonly></input>
+			  <img src="" id="result-img">
+			  <script>
+				  function onFormSubmit(event) {
+					event.preventDefault();
+					const formElement = document.getElementById('form');
+					const formData = new FormData(formElement);
+					const formMap = {
+						url: formData.get('url'),
+						profile: {}
+					};
+					for (const key of ['width', 'height', 'quality']) {
+						if (formData.get(key)) {
+							formMap.profile[key] = formData.get(key);
+						}
+					}
+					fetch("/signed-image-url", {
+						method: 'POST',
+						body: JSON.stringify(formMap),
+						credentials: 'include',
+						headers: {
+							'Content-Type': 'application/json',
+						  }
+					})
+						.then((res) => res.json())
+						.then((resBody) => {
+							const url = resBody.signedUrl;
+							document.getElementById('result-img').src = url;
+							document.getElementById('result-text').value = url;
+						});
+
+				  }
+			  </script>
+		</body>
+	</html>
+
+`;
+}
+
+export function getLoginResponse(req: express.Request): string {
+	const userHost = req.get('host') ?? '';
+	let returnUrl = `${req.protocol}://${userHost}${req.originalUrl}`;
+	if (returnUrl.includes('localhost')) {
+		returnUrl =
+			'https://image-url-signing-service.local.dev-gutools.co.uk/';
+	}
+	const loginDomain = getLoginUrl(getStage());
+	const encodedReturnUrl = encodeURIComponent(returnUrl);
+	const loginUrl = `${loginDomain}/login?returnUrl=${encodedReturnUrl}`;
+	const loginRedirectHTML = `
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Image URL Signing Service - Not logged in</title>
+	</head>
+	<body>
+		<h1>Image URL Signing Service</h1>
+		<p>You must be logged in to use the Image URL signing service.
+			<a href="${loginUrl}">Click here to login</a>
+		</p>
+	</body>
+</html>
+`;
+	return loginRedirectHTML;
+}
