@@ -75,7 +75,7 @@ function withPandaAuth(
 	req: express.Request,
 	res: express.Response,
 	onSuccess: (result: AuthenticationResult) => unknown,
-	onFailure?: () => unknown,
+	onFailure: () => unknown,
 ) {
 	const panda = getPanda();
 	panda
@@ -84,13 +84,7 @@ function withPandaAuth(
 			if (panAuthResult.status === 'Authorised') {
 				onSuccess(panAuthResult);
 			} else {
-				if (onFailure) {
-					onFailure();
-				} else {
-					res.status(403).send({
-						error: 'Not authorised by pan-domain login',
-					});
-				}
+				onFailure();
 			}
 		})
 		.catch((ex: unknown) => {
@@ -140,49 +134,79 @@ export function buildApp(
 	app.post(
 		'/signed-image-url',
 		(req: express.Request, res: express.Response) =>
-			withPandaAuth(getPanda, req, res, () => {
-				handleImageSigning(
-					req.body as SignedImageUrlConfig | undefined,
-					getPanda,
-					req,
-					res,
-				);
-			}),
+			withPandaAuth(
+				getPanda,
+				req,
+				res,
+				() => {
+					handleImageSigning(
+						req.body as SignedImageUrlConfig | undefined,
+						getPanda,
+						req,
+						res,
+					);
+				},
+				() => {
+					res.status(403).send({
+						error: 'Not authorised by pan-domain login',
+					});
+				},
+			),
 	);
 
 	app.get(
 		'/signed-image-url',
 		(req: express.Request, res: express.Response) =>
-			withPandaAuth(getPanda, req, res, () => {
-				const config: SignedImageUrlConfig = {
-					url: req.query.url as string,
-					profile: {
-						width: DEFAULT_WIDTH,
-					},
-				};
-				if (config.profile && req.query.width) {
-					config.profile.width = Number.parseInt(
-						req.query.width.toString(),
-					);
-				}
-				if (config.profile && req.query.height) {
-					config.profile.height = Number.parseInt(
-						req.query.height.toString(),
-					);
-				}
-				if (config.profile && req.query.quality) {
-					config.profile.quality = Number.parseInt(
-						req.query.quality.toString(),
-					);
-				}
-				handleImageSigning(config, getPanda, req, res);
-			}),
+			withPandaAuth(
+				getPanda,
+				req,
+				res,
+				() => {
+					const config: SignedImageUrlConfig = {
+						url: req.query.url as string,
+						profile: {
+							width: DEFAULT_WIDTH,
+						},
+					};
+					if (config.profile && req.query.width) {
+						config.profile.width = Number.parseInt(
+							req.query.width.toString(),
+						);
+					}
+					if (config.profile && req.query.height) {
+						config.profile.height = Number.parseInt(
+							req.query.height.toString(),
+						);
+					}
+					if (config.profile && req.query.quality) {
+						config.profile.quality = Number.parseInt(
+							req.query.quality.toString(),
+						);
+					}
+					handleImageSigning(config, getPanda, req, res);
+				},
+				() => {
+					res.status(403).send({
+						error: 'Not authorised by pan-domain login',
+					});
+				},
+			),
 	);
 
 	app.get('/userdetails', (req: express.Request, res: express.Response) =>
-		withPandaAuth(getPanda, req, res, (authResult) => {
-			res.send(authResult);
-		}),
+		withPandaAuth(
+			getPanda,
+			req,
+			res,
+			(authResult) => {
+				res.send(authResult);
+			},
+			() => {
+				res.status(403).send({
+					error: 'Not authorised by pan-domain login',
+				});
+			},
+		),
 	);
 
 	app.get('/healthcheck', (req: express.Request, res: express.Response) => {
