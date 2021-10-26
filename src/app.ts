@@ -9,10 +9,13 @@ import cors from 'cors';
 import express from 'express';
 import type { Express } from 'express';
 import { getStage, REGION, SETTINGS_FILE } from './environment';
+import { getLoginResponse, getUI } from './uiHtml';
+
+const DEFAULT_WIDTH = 800;
 
 interface SignedImageUrlConfig {
 	url?: string;
-	profile?: { width?: number; height?: number };
+	profile?: { width?: number; height?: number; quality?: number };
 }
 
 function getPanDomainAuth() {
@@ -54,7 +57,7 @@ function handleImageSigning(
 		return;
 	}
 
-	const profile = config?.profile ?? { width: 800 };
+	const profile = config?.profile ?? { width: DEFAULT_WIDTH };
 
 	try {
 		const signedUrl = format(url, salt, profile);
@@ -72,6 +75,7 @@ function withPandaAuth(
 	req: express.Request,
 	res: express.Response,
 	onSuccess: (result: AuthenticationResult) => unknown,
+	onFailure: () => unknown,
 ) {
 	const panda = getPanda();
 	panda
@@ -80,9 +84,7 @@ function withPandaAuth(
 			if (panAuthResult.status === 'Authorised') {
 				onSuccess(panAuthResult);
 			} else {
-				res.status(403).send({
-					error: 'Not authorised by pan-domain login',
-				});
+				onFailure();
 			}
 		})
 		.catch((ex: unknown) => {
@@ -110,37 +112,101 @@ export function buildApp(
 
 	app.use(jsonBodyParser());
 
+	const uiHandler = (req: express.Request, res: express.Response) => {
+		withPandaAuth(
+			getPanda,
+			req,
+			res,
+			async () => {
+				const panAuthResult = await getPanda().verify(
+					getCookieString(req),
+				);
+				res.contentType('html').send(getUI(panAuthResult));
+			},
+			() => {
+				res.status(403).contentType('html').send(getLoginResponse(req));
+			},
+		);
+	};
+
+	app.get('/', uiHandler);
+
 	app.post(
 		'/signed-image-url',
 		(req: express.Request, res: express.Response) =>
-			withPandaAuth(getPanda, req, res, () => {
-				handleImageSigning(
-					req.body as SignedImageUrlConfig | undefined,
-					getPanda,
-					req,
-					res,
-				);
-			}),
+			withPandaAuth(
+				getPanda,
+				req,
+				res,
+				() => {
+					handleImageSigning(
+						req.body as SignedImageUrlConfig | undefined,
+						getPanda,
+						req,
+						res,
+					);
+				},
+				() => {
+					res.status(403).send({
+						error: 'Not authorised by pan-domain login',
+					});
+				},
+			),
 	);
 
 	app.get(
 		'/signed-image-url',
 		(req: express.Request, res: express.Response) =>
-			withPandaAuth(getPanda, req, res, () => {
-				const config = { url: req.query.url };
-				handleImageSigning(
-					config as SignedImageUrlConfig,
-					getPanda,
-					req,
-					res,
-				);
-			}),
+			withPandaAuth(
+				getPanda,
+				req,
+				res,
+				() => {
+					const config: SignedImageUrlConfig = {
+						url: req.query.url as string,
+						profile: {
+							width: DEFAULT_WIDTH,
+						},
+					};
+					if (config.profile && req.query.width) {
+						config.profile.width = Number.parseInt(
+							req.query.width.toString(),
+						);
+					}
+					if (config.profile && req.query.height) {
+						config.profile.height = Number.parseInt(
+							req.query.height.toString(),
+						);
+					}
+					if (config.profile && req.query.quality) {
+						config.profile.quality = Number.parseInt(
+							req.query.quality.toString(),
+						);
+					}
+					handleImageSigning(config, getPanda, req, res);
+				},
+				() => {
+					res.status(403).send({
+						error: 'Not authorised by pan-domain login',
+					});
+				},
+			),
 	);
 
 	app.get('/userdetails', (req: express.Request, res: express.Response) =>
-		withPandaAuth(getPanda, req, res, (authResult) => {
-			res.send(authResult);
-		}),
+		withPandaAuth(
+			getPanda,
+			req,
+			res,
+			(authResult) => {
+				res.send(authResult);
+			},
+			() => {
+				res.status(403).send({
+					error: 'Not authorised by pan-domain login',
+				});
+			},
+		),
 	);
 
 	app.get('/healthcheck', (req: express.Request, res: express.Response) => {
