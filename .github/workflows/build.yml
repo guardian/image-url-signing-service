@@ -54,7 +54,7 @@ jobs:
       - name: Riff-Raff
         uses: guardian/actions-riff-raff@v2
         with:
-          app: image-url-signing-service
+          projectName: targeting:image-url-signing-service
           buildNumberOffset: 1000
           config: |
             stacks:
