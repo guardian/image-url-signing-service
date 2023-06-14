@@ -34,8 +34,16 @@ jobs:
         run: |
           npm install -g yarn
           yarn install
+          yarn lint
           yarn test
           yarn build
+
+          cp package.json dist/
+          cp yarn.lock dist/
+          cd dist
+          yarn install --production
+          zip -r image-url-signing-service ./*
+          cd ..
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -44,7 +52,38 @@ jobs:
           aws-region: eu-west-1
 
       - name: Riff-Raff
-        run: |
-          export LAST_TEAMCITY_BUILD=1000
-          export GITHUB_RUN_NUMBER=$(( $GITHUB_RUN_NUMBER + $LAST_TEAMCITY_BUILD ))
-          yarn riffraff
+        uses: guardian/actions-riff-raff@v2
+        with:
+          app: image-url-signing-service
+          buildNumberOffset: 1000
+          config: |
+            stacks:
+              - targeting
+            regions:
+              - eu-west-1
+            allowedStages:
+              - CODE
+              - PROD
+            deployments:
+              cloudformation:
+                type: cloud-formation
+                app: image-url-signing-service
+                parameters:
+                  cloudFormationStackName: image-url-signing-service 
+                  prependStackToCloudFormationStackName: true
+                  templateStagePaths:
+                    CODE: cfn.yaml
+                    PROD: cfn.yaml
+
+              image-url-signing-service:
+                type: aws-lambda
+                dependencies: [ cloudformation ]
+                fileName: image-url-signing-service.zip
+                functionNames:
+                  - image-url-signing-service-
+
+          contentDirectories: |
+            apps-metering:
+              - dist/image-url-signing-service.zip
+            apps-metering-cloudformation:
+              - cfn.yaml
