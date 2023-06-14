@@ -84,7 +84,7 @@ jobs:
                     - image-url-signing-service-
 
           contentDirectories: |
-            apps-metering:
+            image-url-signing-service:
               - dist/image-url-signing-service.zip
-            apps-metering-cloudformation:
+            cloudformation:
               - cfn.yaml
