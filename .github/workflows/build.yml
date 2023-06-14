@@ -78,9 +78,10 @@ jobs:
               image-url-signing-service:
                 type: aws-lambda
                 dependencies: [ cloudformation ]
-                fileName: image-url-signing-service.zip
-                functionNames:
-                  - image-url-signing-service-
+                parameters:
+                  fileName: image-url-signing-service.zip
+                  functionNames:
+                    - image-url-signing-service-
 
           contentDirectories: |
             apps-metering:
