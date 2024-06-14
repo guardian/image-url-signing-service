@@ -12,8 +12,7 @@ jobs:
     uses: guardian/.github/.github/workflows/sbt-node-snyk.yml@main
     with:
       DEBUG: true
-      ORG: the-guardian-cuu
-      SKIP_NODE: false
-      PROJECT_TAGS: Team=MarketingTools
+      ORG: guardian-value
+      SKIP_SBT: true
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
