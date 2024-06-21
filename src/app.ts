@@ -169,6 +169,10 @@ export function buildApp(
 							width: DEFAULT_WIDTH,
 						},
 					};
+					// The typeof checks below are because of the way express
+					// handles multiple query parameters of the same name. I
+					// don't think we need to handle this, so if it's not a
+					// string, ignore it.
 					if (
 						config.profile &&
 						req.query.width &&
