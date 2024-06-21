@@ -57,7 +57,7 @@ function handleImageSigning(
 		return;
 	}
 
-	const profile = config?.profile ?? { width: DEFAULT_WIDTH };
+	const profile = config.profile ?? { width: DEFAULT_WIDTH };
 
 	try {
 		const signedUrl = format(url, salt, profile);
