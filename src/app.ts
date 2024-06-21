@@ -1,5 +1,6 @@
 import { format } from '@guardian/image';
 import {
+	AuthenticationStatus,
 	guardianValidation,
 	PanDomainAuthentication,
 } from '@guardian/pan-domain-node';
@@ -81,7 +82,7 @@ function withPandaAuth(
 	panda
 		.verify(getCookieString(req))
 		.then((panAuthResult) => {
-			if (panAuthResult.status === 'Authorised') {
+			if (panAuthResult.status === AuthenticationStatus.AUTHORISED) {
 				onSuccess(panAuthResult);
 			} else {
 				onFailure();
@@ -168,19 +169,29 @@ export function buildApp(
 							width: DEFAULT_WIDTH,
 						},
 					};
-					if (config.profile && req.query.width) {
-						config.profile.width = Number.parseInt(
-							req.query.width.toString(),
-						);
+					if (
+						config.profile &&
+						req.query.width &&
+						typeof req.query.width === 'string'
+					) {
+						config.profile.width = Number.parseInt(req.query.width);
 					}
-					if (config.profile && req.query.height) {
+					if (
+						config.profile &&
+						req.query.height &&
+						req.query.height === 'string'
+					) {
 						config.profile.height = Number.parseInt(
-							req.query.height.toString(),
+							req.query.height,
 						);
 					}
-					if (config.profile && req.query.quality) {
+					if (
+						config.profile &&
+						req.query.quality &&
+						req.query.quality === 'string'
+					) {
 						config.profile.quality = Number.parseInt(
-							req.query.quality.toString(),
+							req.query.quality,
 						);
 					}
 					handleImageSigning(config, getPanda, req, res);
