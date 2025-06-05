@@ -1,6 +1,6 @@
 import type { AuthenticationResult } from '@guardian/pan-domain-node';
 import type express from 'express';
-import { getLoginUrl, getStage } from './environment';
+import { getLoginUrl, getStage, getUserTelemetryClient } from './environment';
 
 export function getUI(authResult?: AuthenticationResult): string {
 	let userNameString = '';
@@ -12,6 +12,7 @@ export function getUI(authResult?: AuthenticationResult): string {
 	if (authResult?.user?.avatarUrl) {
 		avatarHtml = `<img id="avatar-img" style="width: 32px; height: 32px; border-radius: 32px;" src="${authResult.user.avatarUrl}">`;
 	}
+	const pixelTrackingUrl = `${getUserTelemetryClient(getStage())}/guardian-tool-accessed?app=image-url-signing-service&path=/`
 
 	const stage = getStage() ?? 'PROD';
 	const lambdaName = `image-url-signing-service-${stage}`;
@@ -128,6 +129,7 @@ export function getUI(authResult?: AuthenticationResult): string {
 
 				  }
 			  </script>
+			  <img style="display:none;" src="${pixelTrackingUrl}">
 		</body>
 	</html>
 

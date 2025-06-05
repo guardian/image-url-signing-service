@@ -28,5 +28,16 @@ export function getLoginUrl(stage: string | undefined): string {
 	}
 }
 
+export function getUserTelemetryClient(stage: string | undefined): string {
+	switch (stage) {
+		case 'CODE':
+			return 'https://user-telemetry.code.dev-gutools.co.uk';
+		case 'PROD':
+			return 'https://user-telemetry.gutools.co.uk';
+		default:
+			return 'https://user-telemetry.local.dev-gutools.co.uk';
+	}
+}
+
 export const SETTINGS_FILE = getSettingsFile(getStage());
 export const REGION = process.env.AWS_REGION || 'eu-west-1';
