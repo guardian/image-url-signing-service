@@ -12,7 +12,7 @@
   "projectName": "targeting:image-url-signing-service",
   "dependencies": {
     "@guardian/image": "^1.1.0",
-    "@guardian/pan-domain-node": "^0.4.2",
+    "@guardian/pan-domain-node": "file:../pan-domain-node",
     "@rollup/plugin-json": "^4.1.0",
     "@vendia/serverless-express": "^4.3.9",
     "aws-sdk": "^2.932.0",

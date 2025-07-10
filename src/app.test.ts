@@ -27,13 +27,13 @@ describe('Image signing service', () => {
 			verify: jest.fn((cookie) => {
 				if (cookie == mockValidCookie) {
 					return Promise.resolve({
-						status: 'Authorised',
+						success: true,
 						user: mockUser,
 					});
 				} else {
 					return Promise.resolve({
-						status: 'Not Authorised',
-						user: null,
+						success: false,
+						reason: 'invalid-cookie',
 					});
 				}
 			}),
