@@ -1,6 +1,5 @@
 import { format } from '@guardian/image';
 import {
-	AuthenticationStatus,
 	guardianValidation,
 	PanDomainAuthentication,
 } from '@guardian/pan-domain-node';
@@ -21,12 +20,14 @@ interface SignedImageUrlConfig {
 
 function getPanDomainAuth() {
 	const SETTINGS_BUCKET = 'pan-domain-auth-settings';
+	const stage = getStage();
 	const panda = new PanDomainAuthentication(
 		'gutoolsAuth-assym',
 		REGION,
 		SETTINGS_BUCKET,
 		SETTINGS_FILE,
 		guardianValidation,
+		(stage !== 'CODE' && stage !== 'PROD')
 	);
 	return panda;
 }
@@ -82,7 +83,7 @@ function withPandaAuth(
 	panda
 		.verify(getCookieString(req))
 		.then((panAuthResult) => {
-			if (panAuthResult.status === AuthenticationStatus.AUTHORISED) {
+			if (panAuthResult.success) {
 				onSuccess(panAuthResult);
 			} else {
 				onFailure();
