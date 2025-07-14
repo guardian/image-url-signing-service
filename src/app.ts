@@ -1,3 +1,4 @@
+import { fromIni, fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import { format } from '@guardian/image';
 import {
 	guardianValidation,
@@ -19,6 +20,7 @@ interface SignedImageUrlConfig {
 }
 
 function getPanDomainAuth() {
+	const LOCAL_PROFILE = 'workflow';
 	const SETTINGS_BUCKET = 'pan-domain-auth-settings';
 	const stage = getStage();
 	const panda = new PanDomainAuthentication(
@@ -27,7 +29,9 @@ function getPanDomainAuth() {
 		SETTINGS_BUCKET,
 		SETTINGS_FILE,
 		guardianValidation,
-		(stage !== 'CODE' && stage !== 'PROD')
+		stage === 'CODE' || stage === 'PROD'
+			? fromNodeProviderChain()
+			: fromIni({ profile: LOCAL_PROFILE }),
 	);
 	return panda;
 }

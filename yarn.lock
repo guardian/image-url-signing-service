@@ -593,7 +593,7 @@
     "@smithy/types" "^4.3.1"
     tslib "^2.6.2"
 
-"@aws-sdk/types@3.840.0", "@aws-sdk/types@^3.222.0":
+"@aws-sdk/types@3.840.0", "@aws-sdk/types@^3.222.0", "@aws-sdk/types@^3.299.0":
   version "3.840.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/types/-/types-3.840.0.tgz#aadc6843d5c1f24b3d1d228059e702a355bf07c3"
   integrity sha512-xliuHaUFZxEx1NSXeLLZ9Dyu6+EJVQKEoD+yM+zqUo3YDZ7medKJWY6fIOKiPX/N7XbLdBYwajb15Q7IL8KkeA==
@@ -1068,11 +1068,14 @@
   dependencies:
     md5 "^2.2.1"
 
-"@guardian/pan-domain-node@file:../pan-domain-node":
-  version "1.0.0"
+"@guardian/pan-domain-node@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@guardian/pan-domain-node/-/pan-domain-node-1.1.0.tgz#3ee1626715d1b5d4f9ea011f236c48171be81d8f"
+  integrity sha512-tsA04wbVhRh1weMJvi70aKzIjVdq8MMI32C3Z+Ev3mI+8qBpxF7Q1xoKfy/3+Uc4dWSKR35Ly5m/0v3S2gQw8g==
   dependencies:
     "@aws-sdk/client-s3" "^3.299.0"
     "@aws-sdk/credential-providers" "^3.299.0"
+    "@aws-sdk/types" "^3.299.0"
     cookie "^0.4.1"
     iniparser "^1.0.5"
 
