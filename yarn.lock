@@ -1068,10 +1068,10 @@
   dependencies:
     md5 "^2.2.1"
 
-"@guardian/pan-domain-node@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@guardian/pan-domain-node/-/pan-domain-node-1.1.0.tgz#3ee1626715d1b5d4f9ea011f236c48171be81d8f"
-  integrity sha512-tsA04wbVhRh1weMJvi70aKzIjVdq8MMI32C3Z+Ev3mI+8qBpxF7Q1xoKfy/3+Uc4dWSKR35Ly5m/0v3S2gQw8g==
+"@guardian/pan-domain-node@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@guardian/pan-domain-node/-/pan-domain-node-1.2.0.tgz#d36afcb5b6b331f9bc22a39d8738dc4cdaf6e6e4"
+  integrity sha512-hsvLR9wbTKvJxf1nXdTsusjymLTp2viz3t1hhxPfEe3JS/CScHC6aW0kbiyfqLU+utDLuRHWDra9cDpOcBkIkQ==
   dependencies:
     "@aws-sdk/client-s3" "^3.299.0"
     "@aws-sdk/credential-providers" "^3.299.0"
