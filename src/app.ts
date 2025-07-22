@@ -20,7 +20,6 @@ interface SignedImageUrlConfig {
 }
 
 function getPanDomainAuth() {
-	const LOCAL_PROFILE = 'workflow';
 	const SETTINGS_BUCKET = 'pan-domain-auth-settings';
 	const stage = getStage();
 	const panda = new PanDomainAuthentication(
@@ -31,7 +30,7 @@ function getPanDomainAuth() {
 		guardianValidation,
 		stage === 'CODE' || stage === 'PROD'
 			? fromNodeProviderChain()
-			: fromIni({ profile: LOCAL_PROFILE }),
+			: fromIni(),
 	);
 	return panda;
 }
