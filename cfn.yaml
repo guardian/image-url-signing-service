@@ -59,6 +59,12 @@ Resources:
               Action:
                 - 'lambda:InvokeFunction'
               Resource: '*'
+        - PolicyName: panda
+          PolicyDocument:
+            Statement:
+              Effect: Allow
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::pan-domain-auth-settings/*'
 
   ImageSigningApiLambda:
     Type: AWS::Lambda::Function
