@@ -172,3 +172,5 @@ Resources:
       RestApiId: !Ref ImageSigningApi
       DomainName: !FindInMap ['DomainNames', !Ref Stage, 'Name']
       Stage: !Ref Stage
+    DependsOn:
+      - ImageSigningApiCustomDomain
