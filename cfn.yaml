@@ -174,3 +174,18 @@ Resources:
       Stage: !Ref Stage
     DependsOn:
       - ImageSigningApiCustomDomain
+
+  ImageSigningApiDNSRecord:
+    Type: Guardian::DNS::RecordSet
+    Properties:
+      Name: !FindInMap ['DomainNames', !Ref Stage, 'Name']
+      RecordType: CNAME
+      ResourceRecords:
+        - Fn::Join:
+          - "."
+          - - !Ref ImageSigningApi
+            - execute-api
+            - !Ref AWS::Region
+            - !Ref AWS::URLSuffix
+      Stage: !Ref Stage
+      TTL: 3600
