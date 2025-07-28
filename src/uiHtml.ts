@@ -4,14 +4,16 @@ import { getLoginUrl, getStage, getUserTelemetryClient } from './environment';
 
 export function getUI(authResult?: AuthenticationResult): string {
 	let userNameString = '';
-	if (authResult?.user?.firstName && authResult.user.lastName) {
-		userNameString = `${authResult.user.firstName} ${authResult.user.lastName}`;
+	let avatarHtml = '';
+	if (authResult?.success) {
+		if (authResult.user.firstName && authResult.user.lastName) {
+			userNameString = `${authResult.user.firstName} ${authResult.user.lastName}`;
+		}
+		if (authResult.user.avatarUrl) {
+			avatarHtml = `<img id="avatar-img" style="width: 32px; height: 32px; border-radius: 32px;" src="${authResult.user.avatarUrl}">`;
+		}
 	}
 
-	let avatarHtml = '';
-	if (authResult?.user?.avatarUrl) {
-		avatarHtml = `<img id="avatar-img" style="width: 32px; height: 32px; border-radius: 32px;" src="${authResult.user.avatarUrl}">`;
-	}
 	const pixelTrackingUrl = `${getUserTelemetryClient(getStage())}/guardian-tool-accessed?app=image-url-signing-service&path=/`
 
 	const stage = getStage() ?? 'PROD';
