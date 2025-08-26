@@ -80,7 +80,7 @@ export function getUI(authResult?: AuthenticationResult): string {
 			<p>To use the resizer, paste your media.guim url into the box below, together width any parameters you'd like. For example, this image url: https://media.guim.co.uk/273bca7a4a3d0a38886ea9229f7a87a6d63d723c/608_1843_5584_5584/master/5584.jpg</p>
 
 			<p>On the backend this uses a Lambda on the account called ${lambdaName}.
-			<a href="https://janus.gutools.co.uk/console?permissionId=ophan-dev&tzOffset=1" target="_blank">Click here to open AWS web console for Ophan account (via Janus)</a>
+			<a href="https://janus.gutools.co.uk/console?permissionId=targeting-dev&tzOffset=0" target="_blank">Click here to open AWS web console for Targetin account (via Janus)</a>
 			</p>
 			<form id="form" onsubmit="onFormSubmit(event)">
 
