@@ -1,197 +1,45 @@
+# =========================================================================
+# MIGRATION NOTICE: CloudFormation → CDK
+# =========================================================================
+# This CloudFormation template has been REPLACED with AWS CDK infrastructure
+# 
+# NEW DEPLOYMENT LOCATION: ./cdk/ directory
+# 
+# To deploy this service:
+# 1. cd cdk/
+# 2. npm install
+# 3. npm run deploy:code   (for CODE environment)
+# 4. npm run deploy:prod   (for PROD environment)
+# 
+# CDK Benefits:
+# - Type-safe infrastructure as code
+# - Better integration with Guardian CDK patterns
+# - Improved testing and validation
+# - Consistent deployment patterns across Guardian services
+# 
+# This file is kept for historical reference only.
+# =========================================================================
+
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Lambda API for signing i.guim.co.uk image urls
+Description: 'DEPRECATED - This infrastructure has been migrated to CDK. See cdk/ directory.'
+
 Parameters:
-  Stack:
-    Description: Stack name
+  Notice:
     Type: String
-    Default: targeting
-  App:
-    Description: Application name
-    Type: String
-    Default: image-url-signing-service
-  Stage:
-    Description: Stage name
-    Type: String
-    AllowedValues:
-      - CODE
-      - PROD
-    Default: CODE
-  DeployBucket:
-    Description: Bucket where RiffRaff uploads artifacts on deploy
-    Type: String
-    Default: targeting-dist
-  TLSCert:
-    Type: String
-    Description: ARN of TLS certificate in US-EAST-1
-    Default: 'arn:aws:acm:us-east-1:477621165360:certificate/781a1702-ca2e-4142-8acf-7ce23f52d106'
-Mappings:
-  DomainNames:
-    CODE:
-      Name: image-url-signing-service.code.dev-gutools.co.uk
-    PROD:
-      Name: image-url-signing-service.gutools.co.uk
+    Default: 'This template is deprecated. Use CDK in the cdk/ directory.'
+    Description: 'Migration notice for operators'
+
 Resources:
-  ExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action: 'sts:AssumeRole'
-      Path: /
-      Policies:
-        - PolicyName: logs
-          PolicyDocument:
-            Statement:
-              Effect: Allow
-              Action:
-                - 'logs:CreateLogGroup'
-                - 'logs:CreateLogStream'
-                - 'logs:PutLogEvents'
-              Resource: 'arn:aws:logs:*:*:*'
-        - PolicyName: lambda
-          PolicyDocument:
-            Statement:
-              Effect: Allow
-              Action:
-                - 'lambda:InvokeFunction'
-              Resource: '*'
-        - PolicyName: panda
-          PolicyDocument:
-            Statement:
-              Effect: Allow
-              Action: 's3:GetObject'
-              Resource: 'arn:aws:s3:::pan-domain-auth-settings/*'
+  # This is a placeholder resource to make the template valid
+  # The actual infrastructure is now defined in CDK
+  MigrationNotice:
+    Type: AWS::CloudFormation::WaitConditionHandle
 
-  ImageSigningApiLambda:
-    Type: AWS::Lambda::Function
-    Properties:
-      FunctionName: !Sub image-url-signing-service-${Stage}
-      Code:
-        S3Bucket:
-          Ref: DeployBucket
-        S3Key: !Sub '${Stack}/${Stage}/image-url-signing-service/image-url-signing-service.zip'
-      Description: Sign i.guim.co.uk image urls
-      Handler: index.handler
-      MemorySize: 128
-      Role:
-        'Fn::GetAtt': ['ExecutionRole', 'Arn']
-      Runtime: nodejs18.x
-      Timeout: 60
-
-  ImageSigningLambdaApiPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:invokeFunction
-      FunctionName: !Sub image-url-signing-service-${Stage}
-      Principal: apigateway.amazonaws.com
-    DependsOn: ImageSigningApiLambda
-
-  ImageSigningApi:
-    Type: 'AWS::ApiGateway::RestApi'
-    Properties:
-      Description: API for signing i.guim.co.uk image urls
-      Name: !Sub image-url-signing-service-${Stage}
-
-  ImageSigningApiUsagePlan:
-    Type: AWS::ApiGateway::UsagePlan
-    Properties:
-      UsagePlanName: image-url-signing-service
-      ApiStages:
-        - ApiId: !Ref ImageSigningApi
-          Stage: !Ref Stage
-    DependsOn:
-      - ImageSigningApi
-      - ImageSigningApiStage
-
-  ImageSigningApiProxyResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      RestApiId: !Ref ImageSigningApi
-      ParentId: !GetAtt [ImageSigningApi, RootResourceId]
-      PathPart: '{proxy+}'
-    DependsOn: ImageSigningApi
-
-  ImageSigningApiRootAnyMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      AuthorizationType: NONE
-      ApiKeyRequired: false
-      RestApiId: !Ref ImageSigningApi
-      ResourceId: !GetAtt [ImageSigningApi, RootResourceId]
-      HttpMethod: ANY
-      Integration:
-        Type: AWS_PROXY
-        IntegrationHttpMethod: POST # this for the interaction between API Gateway and Lambda and MUST be POST
-        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ImageSigningApiLambda.Arn}/invocations
-    DependsOn:
-      - ImageSigningApi
-      - ImageSigningApiLambda
-
-  ImageSigningApiAnyMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      AuthorizationType: NONE
-      ApiKeyRequired: false
-      RestApiId: !Ref ImageSigningApi
-      ResourceId: !Ref ImageSigningApiProxyResource
-      HttpMethod: ANY
-      Integration:
-        Type: AWS_PROXY
-        IntegrationHttpMethod: POST # this for the interaction between API Gateway and Lambda and MUST be POST
-        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ImageSigningApiLambda.Arn}/invocations
-    DependsOn:
-      - ImageSigningApi
-      - ImageSigningApiLambda
-      - ImageSigningApiProxyResource
-
-  ImageSigningApiStage:
-    Type: AWS::ApiGateway::Stage
-    Properties:
-      Description: Stage for image-url-signing-service
-      RestApiId: !Ref ImageSigningApi
-      DeploymentId: !Ref ImageSigningApiDeployment
-      StageName: !Sub ${Stage}
-    DependsOn:
-      - ImageSigningApiAnyMethod
-
-  ImageSigningApiDeployment:
-    Type: AWS::ApiGateway::Deployment
-    Properties:
-      Description: Deploys image-url-signing-service into an environment/stage
-      RestApiId: !Ref ImageSigningApi
-    DependsOn:
-      - ImageSigningApiAnyMethod
-
-  ImageSigningApiCustomDomain:
-    Type: AWS::ApiGateway::DomainName
-    Properties:
-      DomainName: !FindInMap ['DomainNames', !Ref Stage, 'Name']
-      CertificateArn: !Ref TLSCert
-
-  ImageSigningApiMapping:
-    Type: AWS::ApiGateway::BasePathMapping
-    Properties:
-      RestApiId: !Ref ImageSigningApi
-      DomainName: !FindInMap ['DomainNames', !Ref Stage, 'Name']
-      Stage: !Ref Stage
-    DependsOn:
-      - ImageSigningApiCustomDomain
-
-  ImageSigningApiDNSRecord:
-    Type: Guardian::DNS::RecordSet
-    Properties:
-      Name: !FindInMap ['DomainNames', !Ref Stage, 'Name']
-      RecordType: CNAME
-      ResourceRecords:
-        - Fn::Join:
-          - "."
-          - - !Ref ImageSigningApi
-            - execute-api
-            - !Ref AWS::Region
-            - !Ref AWS::URLSuffix
-      Stage: !Ref Stage
-      TTL: 3600
+Outputs:
+  MigrationNotice:
+    Description: 'This infrastructure has been migrated to CDK. Use the cdk/ directory for deployment.'
+    Value: 'Use: cd cdk && npm run deploy'
+  
+  CDKCommands:
+    Description: 'Commands to deploy via CDK'
+    Value: 'CODE: npm run deploy:code | PROD: npm run deploy:prod'
