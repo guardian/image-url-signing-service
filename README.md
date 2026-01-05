@@ -25,3 +25,8 @@ Run the tests:
 ```
 $ yarn test
 ```
+
+
+## Notes
+
+In order for this to generate the signed URL a salt needs to be manually set up for the lambda to use.
