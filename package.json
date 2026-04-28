@@ -55,5 +55,8 @@
   },
   "engines": {
     "npm": "please-use-yarn"
+  },
+  "resolutions": {
+    "picomatch": "2.3.2"
   }
 }
