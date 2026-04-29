@@ -44,7 +44,6 @@ jobs:
           pnpm build
 
           cp package.json dist/
-          cp pnpm-lock.yaml dist/
           cd dist
           pnpm install --production
           zip -r image-url-signing-service ./*
