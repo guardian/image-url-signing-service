@@ -10,6 +10,9 @@
   "cloudformation": "./cfn.yaml",
   "buildDir": "tmp/lambda",
   "projectName": "targeting:image-url-signing-service",
+  "engines": {
+    "node": ">=24"
+  },
   "dependencies": {
     "@guardian/image": "1.1.0",
     "@guardian/pan-domain-node": "1.2.4",
@@ -31,7 +34,7 @@
     "@types/cors": "2.8.10",
     "@types/express": "5.0.0",
     "@types/jest": "26.0.23",
-    "@types/node": "18.19",
+    "@types/node": "24.7.0",
     "@types/supertest": "2.0.11",
     "@aws-sdk/credential-providers": "3.1045.0",
     "esbuild": "0.28.0",

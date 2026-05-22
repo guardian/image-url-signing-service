@@ -17,13 +17,13 @@ It requires a AWS credential that have access to the S3 object storing the publi
 For example, if you want to use the profile "workflow" for the AWS credential, you may run:
 
 ```
-$ AWS_PROFILE=workflow yarn dev
+$ AWS_PROFILE=workflow pnpm dev
 ```
 
 Run the tests:
 
 ```
-$ yarn test
+$ pnpm test
 ```
 
 
