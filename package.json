@@ -27,7 +27,7 @@
     "@guardian/eslint-config-typescript": "10.0.1",
     "@guardian/prettier": "0.6.0",
     "@rollup/plugin-commonjs": "19.0.0",
-    "@rollup/plugin-node-resolve": "13.0.0",
+    "@rollup/plugin-node-resolve": "16.0.3",
     "@rollup/plugin-typescript": "8.2.1",
     "@types/aws-serverless-express": "3.3.3",
     "@types/body-parser": "1.19.6",
