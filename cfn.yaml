@@ -79,7 +79,7 @@ Resources:
       MemorySize: 128
       Role:
         'Fn::GetAtt': ['ExecutionRole', 'Arn']
-      Runtime: nodejs18.x
+      Runtime: nodejs24.x
       Timeout: 60
 
   ImageSigningLambdaApiPermission:
