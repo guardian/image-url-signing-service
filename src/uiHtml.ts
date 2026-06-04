@@ -14,7 +14,9 @@ export function getUI(authResult?: AuthenticationResult): string {
 		}
 	}
 
-	const pixelTrackingUrl = `${getUserTelemetryClient(getStage())}/guardian-tool-accessed?app=image-url-signing-service&path=/`
+	const pixelTrackingUrl = `${getUserTelemetryClient(
+		getStage(),
+	)}/guardian-tool-accessed?app=image-url-signing-service&path=/`;
 
 	const stage = getStage() ?? 'PROD';
 	const lambdaName = `image-url-signing-service-${stage}`;

@@ -5,6 +5,12 @@ import type { PanDomainAuthentication } from '@guardian/pan-domain-node';
 import type { Express } from 'express';
 import request from 'supertest';
 import { buildApp } from './app';
+import * as environment from './environment';
+
+jest.mock('./environment', () => ({
+	...jest.requireActual('./environment'),
+	getSalt: jest.fn(),
+}));
 
 describe('Image signing service', () => {
 	let app: Express;
@@ -40,7 +46,9 @@ describe('Image signing service', () => {
 			stop: jest.fn(),
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- For mocking
 		} as any;
-		process.env.SALT = 'fake';
+		// Mock getSalt to return salt
+		(environment.getSalt as jest.Mock).mockResolvedValue('fake');
+		process.env.SALT = 'fallback-salt';
 		app = buildApp(() => mockPanda);
 	});
 
