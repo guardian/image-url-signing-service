@@ -53,11 +53,6 @@ export async function getSalt(): Promise<string> {
 			secretName,
 			REGION,
 		);
-		console.log(
-			`Successfully retrieved salt from Secrets Manager: ${JSON.stringify(
-				secret,
-			)}`,
-		);
 		return secret.salt;
 	} catch (error) {
 		console.warn(
@@ -71,7 +66,6 @@ export async function getSalt(): Promise<string> {
 				'Service incorrectly configured. No salt provided in Secrets Manager or environment variable',
 			);
 		}
-		console.log('Using salt from environment variable');
 		return salt;
 	}
 }
