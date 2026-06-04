@@ -54,7 +54,9 @@ export async function getSalt(): Promise<string> {
 			REGION,
 		);
 		console.log(
-			`Successfully retrieved salt from Secrets Manager: ${secretName}`,
+			`Successfully retrieved salt from Secrets Manager: ${JSON.stringify(
+				secret,
+			)}`,
 		);
 		return secret.salt;
 	} catch (error) {
