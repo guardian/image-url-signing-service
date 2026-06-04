@@ -9,7 +9,7 @@ import { json as jsonBodyParser } from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import type { Express } from 'express';
-import { getStage, REGION, SETTINGS_FILE } from './environment';
+import { getSalt, getStage, REGION, SETTINGS_FILE } from './environment';
 import { getLoginResponse, getUI } from './uiHtml';
 
 const DEFAULT_WIDTH = 800;
@@ -40,7 +40,7 @@ function getCookieString(req: express.Request) {
 	return Array.isArray(maybeList) ? maybeList.join('') : maybeList;
 }
 
-function handleImageSigning(
+async function handleImageSigning(
 	config: SignedImageUrlConfig | undefined,
 	getPanda: () => PanDomainAuthentication,
 	req: express.Request,
@@ -53,11 +53,12 @@ function handleImageSigning(
 		return;
 	}
 
-	const salt = process.env.SALT;
-	if (!salt) {
-		res.status(500);
-		res.send({
-			error: 'Service incorrectly configured. No salt provided',
+	let salt: string;
+	try {
+		salt = await getSalt();
+	} catch (error) {
+		res.status(500).send({
+			error: error instanceof Error ? error.message : String(error),
 		});
 		return;
 	}
@@ -143,8 +144,8 @@ export function buildApp(
 				getPanda,
 				req,
 				res,
-				() => {
-					handleImageSigning(
+				async () => {
+					await handleImageSigning(
 						req.body as SignedImageUrlConfig | undefined,
 						getPanda,
 						req,
@@ -166,7 +167,7 @@ export function buildApp(
 				getPanda,
 				req,
 				res,
-				() => {
+				async () => {
 					const config: SignedImageUrlConfig = {
 						url: req.query.url as string,
 						profile: {
@@ -202,7 +203,7 @@ export function buildApp(
 							req.query.quality,
 						);
 					}
-					handleImageSigning(config, getPanda, req, res);
+					await handleImageSigning(config, getPanda, req, res);
 				},
 				() => {
 					res.status(403).send({

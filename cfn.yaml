@@ -65,6 +65,12 @@ Resources:
               Effect: Allow
               Action: 's3:GetObject'
               Resource: 'arn:aws:s3:::pan-domain-auth-settings/*'
+        - PolicyName: secrets
+          PolicyDocument:
+            Statement:
+              Effect: Allow
+              Action: 'secretsmanager:GetSecretValue'
+              Resource: !Sub 'arn:aws:secretsmanager:${AWS::Region}:*:secret:image-url-signing-service-*'
 
   ImageSigningApiLambda:
     Type: AWS::Lambda::Function
@@ -188,10 +194,10 @@ Resources:
       RecordType: CNAME
       ResourceRecords:
         - Fn::Join:
-          - "."
-          - - !Ref ImageSigningApi
-            - execute-api
-            - !Ref AWS::Region
-            - !Ref AWS::URLSuffix
+            - '.'
+            - - !Ref ImageSigningApi
+              - execute-api
+              - !Ref AWS::Region
+              - !Ref AWS::URLSuffix
       Stage: !Ref Stage
       TTL: 3600
