@@ -38,7 +38,7 @@
     "@types/jest": "26.0.23",
     "@types/node": "24.7.0",
     "@types/supertest": "2.0.11",
-    "esbuild": "0.28.0",
+    "esbuild": "0.28.1",
     "eslint": "8.56.0",
     "jest": "^29.7.0",
     "prettier": "2.4.1",
@@ -58,8 +58,10 @@
     "prettier:fix": "prettier . --write",
     "lint": "eslint . --ext .ts,.tsx"
   },
-  "resolutions": {
-    "picomatch": "2.3.2"
+  "pnpm": {
+    "overrides": {
+      "minimatch": ">=9.0.7"
+    }
   },
   "packageManager": "pnpm@10.33.0"
 }
