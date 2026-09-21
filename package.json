@@ -60,6 +60,12 @@
   },
   "pnpm": {
     "overrides": {
+      "brace-expansion@>=3.0.0 <5.0.9": "5.0.9",
+      "browserslist@4.28.6": "4.28.7",
+      "form-data@3": "3.0.5",
+      "form-data@4": "4.0.6",
+      "js-yaml@3": "3.15.2",
+      "js-yaml@4": "4.3.2",
       "minimatch": ">=9.0.7"
     }
   },
