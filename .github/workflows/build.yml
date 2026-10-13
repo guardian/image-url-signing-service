@@ -16,10 +16,10 @@ jobs:
           github.event_name == 'push')
 
     name: image-url-signing-service build
-    # Required by actions-assume-aws-role
     permissions:
       id-token: write
       contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -49,15 +49,11 @@ jobs:
           zip -r image-url-signing-service ./*
           cd ..
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
-          aws-region: eu-west-1
-
       - name: Riff-Raff
         uses: guardian/actions-riff-raff@v4.3.3
         with:
+          roleArn: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
           projectName: targeting:image-url-signing-service
           buildNumberOffset: 1000
           config: |
