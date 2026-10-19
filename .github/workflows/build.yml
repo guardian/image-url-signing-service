@@ -50,7 +50,7 @@ jobs:
           cd ..
 
       - name: Riff-Raff
-        uses: guardian/actions-riff-raff@v4.3.3
+        uses: guardian/actions-riff-raff@v4.3.7
         with:
           roleArn: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
