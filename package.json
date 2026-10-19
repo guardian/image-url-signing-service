@@ -27,7 +27,7 @@
   "devDependencies": {
     "@aws-sdk/credential-providers": "3.1045.0",
     "@guardian/eslint-config-typescript": "10.0.1",
-    "@guardian/prettier": "0.6.0",
+    "@guardian/prettier": "4.0.0",
     "@rollup/plugin-commonjs": "19.0.0",
     "@rollup/plugin-node-resolve": "16.0.3",
     "@rollup/plugin-typescript": "8.2.1",

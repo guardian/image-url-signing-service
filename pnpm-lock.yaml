@@ -52,8 +52,8 @@ importers:
         specifier: 10.0.1
         version: 10.0.1(eslint@8.56.0)(tslib@2.6.3)(typescript@5.3.3)
       '@guardian/prettier':
-        specifier: 0.6.0
-        version: 0.6.0(prettier@2.4.1)
+        specifier: 4.0.0
+        version: 4.0.0(prettier@2.4.1)(tslib@2.6.3)
       '@rollup/plugin-commonjs':
         specifier: 19.0.0
         version: 19.0.0(rollup@2.80.0)
@@ -779,10 +779,11 @@ packages:
   '@guardian/pan-domain-node@1.2.4':
     resolution: {integrity: sha512-WpN5Ld+y0Nd3ygN8U9gobBcj9a989hUYDdTLyWWSTM5svGc7aDC4/C2vq5tlLnUzAOg4rWOBBxiiuDV0J9N3Gw==}
 
-  '@guardian/prettier@0.6.0':
-    resolution: {integrity: sha512-RN8GBRth5BXHoWymCZIYDbmZM8DkUbgecf+wyv+9hdXA/ad4Ob4qP9u/ARU689qMo+JSC1z3FRKelvkkjtYzJw==}
+  '@guardian/prettier@4.0.0':
+    resolution: {integrity: sha512-JvvnDnI04NcmpuD2mF5ZXTWI7tand1pj1s33fh4JxHNAV00QXwTWZBI2/QWS3ck7KjpYjpRaz8CDUcMz35hReg==}
     peerDependencies:
-      prettier: ^2.0.0
+      prettier: ^2.4.0
+      tslib: ^2.5.3
 
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
@@ -4676,9 +4677,10 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@guardian/prettier@0.6.0(prettier@2.4.1)':
+  '@guardian/prettier@4.0.0(prettier@2.4.1)(tslib@2.6.3)':
     dependencies:
       prettier: 2.4.1
+      tslib: 2.6.3
 
   '@humanwhocodes/config-array@0.11.14':
     dependencies:
