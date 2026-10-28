@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- For mocking and body access */
 /* eslint-disable @typescript-eslint/unbound-method -- This rule is broken for method references */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access -- For body access which is always any */
+import serverlessExpress from '@codegenie/serverless-express';
 import type { PanDomainAuthentication } from '@guardian/pan-domain-node';
+import type { APIGatewayProxyResult } from 'aws-lambda';
 import type { Express } from 'express';
 import request from 'supertest';
 import { buildApp } from './app';
 import * as environment from './environment';
+import { handler as lambdaHandler } from './index';
 
 jest.mock('./environment', () => ({
 	...jest.requireActual('./environment'),
@@ -110,6 +113,39 @@ describe('Image signing service', () => {
 	});
 
 	describe('POST /signed-image-url', () => {
+		it.each([false, true])(
+			'signs JSON from API Gateway when base64 encoding is %s',
+			async (isBase64Encoded) => {
+				const url =
+					'https://media.guim.co.uk/273bca7a4a3d0a38886ea9229f7a87a6d63d723c/608_1843_5584_5584/master/5584.jpg';
+				const body = JSON.stringify({ url });
+				const handler = serverlessExpress({ app });
+				const response: APIGatewayProxyResult = await handler(
+					{
+						httpMethod: 'POST',
+						path: '/signed-image-url',
+						headers: {
+							'content-type': 'application/json',
+							cookie: mockValidCookie,
+						},
+						requestContext: { identity: { sourceIp: '127.0.0.1' } },
+						body: isBase64Encoded
+							? Buffer.from(body).toString('base64')
+							: body,
+						isBase64Encoded,
+					},
+					{} as Parameters<typeof handler>[1],
+					jest.fn(),
+				);
+
+				expect(response.statusCode).toBe(200);
+				expect(JSON.parse(response.body)).toEqual({
+					signedUrl:
+						'https://i.guim.co.uk/img/media/273bca7a4a3d0a38886ea9229f7a87a6d63d723c/608_1843_5584_5584/master/5584.jpg?width=800&s=55cbb2fa7c0608af6b0dcd2e6fcc1f58',
+				});
+			},
+		);
+
 		it('responds with an error if no url provided', () => {
 			return request(app)
 				.post('/signed-image-url')
@@ -161,6 +197,28 @@ describe('Image signing service', () => {
 	});
 
 	describe('GET /healthcheck', () => {
+		it('exports a promise-based Lambda handler without a callback parameter', async () => {
+			process.env.AWS_LAMBDA_FUNCTION_NAME =
+				'image-url-signing-service-CODE';
+			expect(lambdaHandler.length).toBe(2);
+			const response = lambdaHandler(
+				{
+					httpMethod: 'GET',
+					path: '/healthcheck',
+					headers: {},
+					requestContext: { identity: { sourceIp: '127.0.0.1' } },
+					body: null,
+					isBase64Encoded: false,
+				},
+				{} as Parameters<typeof lambdaHandler>[1],
+			);
+			expect(response).toBeInstanceOf(Promise);
+			await expect(response).resolves.toMatchObject({
+				statusCode: 200,
+				body: JSON.stringify({ status: 'OK', stage: 'CODE' }),
+			});
+		});
+
 		it('returns stage CODE in CODE lambda', async () => {
 			process.env.AWS_LAMBDA_FUNCTION_NAME =
 				'image-url-signing-service-CODE';
