@@ -20,6 +20,9 @@ importers:
       '@aws-sdk/client-secrets-manager':
         specifier: 3.1061.0
         version: 3.1061.0
+      '@codegenie/serverless-express':
+        specifier: 4.17.1
+        version: 4.17.1
       '@guardian/image':
         specifier: 1.1.0
         version: 1.1.0
@@ -29,9 +32,6 @@ importers:
       '@rollup/plugin-json':
         specifier: 4.1.0
         version: 4.1.0(rollup@2.80.0)
-      '@vendia/serverless-express':
-        specifier: 4.3.9
-        version: 4.3.9
       body-parser:
         specifier: 2.4.0
         version: 2.4.0
@@ -63,9 +63,9 @@ importers:
       '@rollup/plugin-typescript':
         specifier: 8.2.1
         version: 8.2.1(rollup@2.80.0)(tslib@2.6.3)(typescript@5.3.3)
-      '@types/aws-serverless-express':
-        specifier: 3.3.3
-        version: 3.3.3
+      '@types/aws-lambda':
+        specifier: 8.10.161
+        version: 8.10.161
       '@types/body-parser':
         specifier: 1.19.6
         version: 1.19.6
@@ -538,6 +538,10 @@ packages:
 
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
+
+  '@codegenie/serverless-express@4.17.1':
+    resolution: {integrity: sha512-B/4RRtVK2iAp5ho+qoUFxUeMaWCgSP+hNrdLJV3DWKZ1E9n9oLKdsJ6W9LQekZsD8rGD15hDadIKWKKw5i3f3A==}
+    engines: {node: '>=18'}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -1163,9 +1167,6 @@ packages:
   '@types/aws-lambda@8.10.161':
     resolution: {integrity: sha512-rUYdp+MQwSFocxIOcSsYSF3YYYC/uUpMbCY/mbO21vGqfrEYvNSoPyKYDj6RhXXpPfS0KstW9RwG3qXh9sL7FQ==}
 
-  '@types/aws-serverless-express@3.3.3':
-    resolution: {integrity: sha512-gIPinyiEsda2Z6Dx6GdQs47/GXaBGEGOMkYWtmqFDsVSDHzWtnIKBBBVQKyMdcK/0ZXa31zzlT+CobFnwNbsTQ==}
-
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
 
@@ -1335,10 +1336,6 @@ packages:
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
     deprecated: Potential CWE-502 - Update to 1.3.1 or higher
-
-  '@vendia/serverless-express@4.3.9':
-    resolution: {integrity: sha512-lfnnnJ/J9rpa4tDqkPzDMmJr+c489YI81i7P9JWZyf3zAKowaF0t1SeR3g9zUJYmTOn9glmqjiaG+OvNvxY7UQ==}
-    engines: {node: '>=12'}
 
   accepts@2.0.0:
     resolution: {integrity: sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng==}
@@ -4252,6 +4249,8 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
+  '@codegenie/serverless-express@4.17.1': {}
+
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
@@ -5046,12 +5045,6 @@ snapshots:
 
   '@types/aws-lambda@8.10.161': {}
 
-  '@types/aws-serverless-express@3.3.3':
-    dependencies:
-      '@types/aws-lambda': 8.10.161
-      '@types/express': 5.0.0
-      '@types/node': 26.6.5
-
   '@types/babel__core@7.20.5':
     dependencies:
       '@babel/parser': 7.29.2
@@ -5268,8 +5261,6 @@ snapshots:
       eslint-visitor-keys: 3.4.3
 
   '@ungap/structured-clone@1.3.0': {}
-
-  '@vendia/serverless-express@4.3.9': {}
 
   accepts@2.0.0:
     dependencies:

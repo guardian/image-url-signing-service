@@ -1,4 +1,5 @@
-import serverlessExpress from '@vendia/serverless-express';
+import serverlessExpress from '@codegenie/serverless-express';
+import type { APIGatewayProxyResult, Context } from 'aws-lambda';
 import { config as dotEnvConfig } from 'dotenv';
 import { buildApp } from './app';
 
@@ -14,7 +15,10 @@ if (process.env.LOCAL === 'true') {
 	});
 }
 
-const serverlessExpressInstance = serverlessExpress({ app });
+const serverlessExpressInstance = serverlessExpress<
+	unknown,
+	APIGatewayProxyResult
+>({ app });
 
-export const handler = async (event: unknown, context: unknown) =>
-	serverlessExpressInstance(event, context);
+export const handler = async (event: unknown, context: Context) =>
+	serverlessExpressInstance(event, context, () => undefined);
