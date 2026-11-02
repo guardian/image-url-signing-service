@@ -18,7 +18,7 @@
     "@codegenie/serverless-express": "4.17.1",
     "@guardian/image": "1.1.0",
     "@guardian/pan-domain-node": "1.2.5",
-    "@rollup/plugin-json": "4.1.0",
+    "@rollup/plugin-json": "6.1.0",
     "body-parser": "2.4.0",
     "cors": "2.8.6",
     "dotenv": "18.0.8",
