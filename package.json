@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "3.1061.0",
-    "@codegenie/serverless-express": "4.17.1",
+    "@codegenie/serverless-express": "5.0.0",
     "@guardian/image": "1.1.0",
     "@guardian/pan-domain-node": "1.2.5",
     "@rollup/plugin-json": "6.1.0",
