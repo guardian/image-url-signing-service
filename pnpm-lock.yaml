@@ -21,8 +21,8 @@ importers:
         specifier: 3.1061.0
         version: 3.1061.0
       '@codegenie/serverless-express':
-        specifier: 4.17.1
-        version: 4.17.1
+        specifier: 5.0.0
+        version: 5.0.0
       '@guardian/image':
         specifier: 1.1.0
         version: 1.1.0
@@ -539,9 +539,9 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@codegenie/serverless-express@4.17.1':
-    resolution: {integrity: sha512-B/4RRtVK2iAp5ho+qoUFxUeMaWCgSP+hNrdLJV3DWKZ1E9n9oLKdsJ6W9LQekZsD8rGD15hDadIKWKKw5i3f3A==}
-    engines: {node: '>=18'}
+  '@codegenie/serverless-express@5.0.0':
+    resolution: {integrity: sha512-7+PvSBj4KmPC8PVFDoXZp2cwTr13YIgFsZT55uJhpt7Ml1hJ3IK1Xnw36hr6GYVzLDrEW26oBZt50jamfu6kkw==}
+    engines: {node: '>=24'}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -918,12 +918,6 @@ packages:
       tslib:
         optional: true
 
-  '@rollup/pluginutils@3.1.0':
-    resolution: {integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==}
-    engines: {node: '>= 8.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0
-
   '@rollup/pluginutils@5.3.0':
     resolution: {integrity: sha512-5EdhGZtnu3V88ces7s53hhfK5KSASnJZv8Lulpc04cWO3REESroJXg73DFsOmgbU2BhwV0E20bu2IDZb3VKW4Q==}
     engines: {node: '>=14.0.0'}
@@ -1218,9 +1212,6 @@ packages:
 
   '@types/cors@2.8.19':
     resolution: {integrity: sha512-mFNylyeyqN93lfe/9CSxOGREz8cpzAhH+E93xJ4xWQf62V8sQ/24reV2nyzUWM6H6Xji+GGHpkbLe7pVoUEskg==}
-
-  '@types/estree@0.0.39':
-    resolution: {integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==}
 
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
@@ -1917,9 +1908,6 @@ packages:
   estraverse@5.3.0:
     resolution: {integrity: sha512-MMdARuVEQziNTeJD8DgMqmhwR11BRQ/cBP+pLtYdSTnf3MIO8fFeiINEbX36ZdNlfU/7A9f3gUw49B3oQsvwBA==}
     engines: {node: '>=4.0'}
-
-  estree-walker@1.0.1:
-    resolution: {integrity: sha512-1fMXF3YP4pZZVozF8j/ZLfvnR8NSIljt56UhbZ5PeeDmmGHpgpdwQt7ITlGvYaQukCvuBRMLEiKiYC+oeIg4cg==}
 
   estree-walker@2.0.2:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
@@ -4273,7 +4261,7 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@codegenie/serverless-express@4.17.1': {}
+  '@codegenie/serverless-express@5.0.0': {}
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -4697,13 +4685,6 @@ snapshots:
       rollup: 2.80.0
       tslib: 2.6.3
 
-  '@rollup/pluginutils@3.1.0(rollup@2.80.0)':
-    dependencies:
-      '@types/estree': 0.0.39
-      estree-walker: 1.0.1
-      picomatch: 2.3.2
-      rollup: 2.80.0
-
   '@rollup/pluginutils@5.3.0(rollup@2.80.0)':
     dependencies:
       '@types/estree': 1.0.9
@@ -5120,8 +5101,6 @@ snapshots:
   '@types/cors@2.8.19':
     dependencies:
       '@types/node': 26.6.5
-
-  '@types/estree@0.0.39': {}
 
   '@types/estree@1.0.9': {}
 
@@ -6000,8 +5979,6 @@ snapshots:
       estraverse: 5.3.0
 
   estraverse@5.3.0: {}
-
-  estree-walker@1.0.1: {}
 
   estree-walker@2.0.2: {}
 
