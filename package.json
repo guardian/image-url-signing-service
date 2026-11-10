@@ -25,7 +25,7 @@
     "express": "5.3.0"
   },
   "devDependencies": {
-    "@aws-sdk/credential-providers": "3.1045.0",
+    "@aws-sdk/credential-providers": "3.1161.0",
     "@guardian/eslint-config-typescript": "10.0.1",
     "@guardian/prettier": "4.0.0",
     "@rollup/plugin-commonjs": "29.0.3",
