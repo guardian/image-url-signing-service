@@ -27,8 +27,8 @@ importers:
         specifier: 1.1.0
         version: 1.1.0
       '@guardian/pan-domain-node':
-        specifier: 1.2.5
-        version: 1.2.5
+        specifier: 3.0.0
+        version: 3.0.0
       '@rollup/plugin-json':
         specifier: 6.1.0
         version: 6.1.0(rollup@4.68.4)
@@ -179,10 +179,6 @@ packages:
 
   '@aws-sdk/nested-clients@3.998.3':
     resolution: {integrity: sha512-acHTTzMB13CU6dU4sxABYExMI3PQM2zStWH2MiUwJp/7QKTrLg2f7mbzSXoegW2kYOk2tdqQYagsZrWB8Xv7eA==}
-    engines: {node: '>=20.0.0'}
-
-  '@aws-sdk/signature-v4-multi-region@3.996.48':
-    resolution: {integrity: sha512-cFDXfEbXaGwbnpvR/DyqfxfjxpjXVRVthQLgkwvcfDS5u3+8G9WSj1X1Ag/pTRg/QOeOno1Tq3ycEdrKsCUcOA==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/signature-v4-multi-region@3.996.52':
@@ -568,8 +564,8 @@ packages:
   '@guardian/image@1.1.0':
     resolution: {integrity: sha512-EiBcBwpe1/HECBZP4BbRcBNR1SL2glrhYFsStWNCJ7rn9ixoo7+WoT23k3FSA5pqU+VVkjVEd7q6Qvaq9+hawg==}
 
-  '@guardian/pan-domain-node@1.2.5':
-    resolution: {integrity: sha512-0gCn3ZQASmhhWWw+zP0/W6KbXPRamnwc/LvG7h5wh2qtFyckxcB9TWAibhOEgdodSsXVin1DuQys4qEfbnKvgg==}
+  '@guardian/pan-domain-node@3.0.0':
+    resolution: {integrity: sha512-TG3K7u4x5+SNjHK1mHh+/4hHXz6bgn+5J+jjed9h/QuFsSlZYhgskS3kqKKDZ3dBqmv99BfHMZFjFYCKlHo5ZA==}
 
   '@guardian/prettier@4.0.0':
     resolution: {integrity: sha512-JvvnDnI04NcmpuD2mF5ZXTWI7tand1pj1s33fh4JxHNAV00QXwTWZBI2/QWS3ck7KjpYjpRaz8CDUcMz35hReg==}
@@ -3155,7 +3151,7 @@ snapshots:
       '@aws-sdk/core': 3.981.0
       '@aws-sdk/credential-provider-node': 3.972.97
       '@aws-sdk/middleware-sdk-s3': 3.972.79
-      '@aws-sdk/signature-v4-multi-region': 3.996.48
+      '@aws-sdk/signature-v4-multi-region': 3.996.52
       '@aws-sdk/types': 3.975.1
       '@smithy/core': 3.40.0
       '@smithy/fetch-http-handler': 5.8.1
@@ -3313,13 +3309,6 @@ snapshots:
       '@smithy/core': 3.40.0
       '@smithy/fetch-http-handler': 5.8.1
       '@smithy/node-http-handler': 4.14.2
-      '@smithy/types': 4.20.0
-      tslib: 2.9.1
-
-  '@aws-sdk/signature-v4-multi-region@3.996.48':
-    dependencies:
-      '@aws-sdk/types': 3.975.1
-      '@smithy/signature-v4': 5.7.5
       '@smithy/types': 4.20.0
       tslib: 2.9.1
 
@@ -3679,7 +3668,7 @@ snapshots:
     dependencies:
       md5: 2.3.0
 
-  '@guardian/pan-domain-node@1.2.5':
+  '@guardian/pan-domain-node@3.0.0':
     dependencies:
       '@aws-sdk/client-s3': 3.1152.0
       '@aws-sdk/credential-providers': 3.1169.0

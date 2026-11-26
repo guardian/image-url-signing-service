@@ -52,7 +52,22 @@ describe('Image signing service', () => {
 		// Mock getSalt to return salt
 		(environment.getSalt as jest.Mock).mockResolvedValue('fake');
 		process.env.SALT = 'fallback-salt';
-		app = buildApp(() => mockPanda);
+		app = buildApp(() => Promise.resolve(mockPanda));
+	});
+
+	it('verifies the UI request once and stops the verifier', async () => {
+		await request(app).get('/').set('Cookie', mockValidCookie).expect(200);
+		expect(mockPanda.verify).toHaveBeenCalledTimes(1);
+		expect(mockPanda.stop).toHaveBeenCalledTimes(1);
+	});
+
+	it('returns an auth error when Panda initialization fails', async () => {
+		const failingApp = buildApp(() =>
+			Promise.reject(new Error('Failed to load settings')),
+		);
+		const res = await request(failingApp).get('/userdetails');
+		expect(res.status).toBe(500);
+		expect(res.body.error).toBe('Pan domain auth error');
 	});
 
 	describe('GET /userdetails', () => {

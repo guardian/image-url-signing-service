@@ -22,17 +22,17 @@ interface SignedImageUrlConfig {
 function getPanDomainAuth() {
 	const SETTINGS_BUCKET = 'pan-domain-auth-settings';
 	const stage = getStage();
-	const panda = new PanDomainAuthentication(
-		'gutoolsAuth-assym',
-		REGION,
-		SETTINGS_BUCKET,
-		SETTINGS_FILE,
-		guardianValidation,
-		stage === 'CODE' || stage === 'PROD'
-			? fromNodeProviderChain()
-			: fromIni(),
-	);
-	return panda;
+	return PanDomainAuthentication.builder({
+		cookieName: 'gutoolsAuth-assym',
+		region: REGION,
+		bucket: SETTINGS_BUCKET,
+		keyFile: SETTINGS_FILE,
+		validateUser: guardianValidation,
+		credentialsProvider:
+			stage === 'CODE' || stage === 'PROD'
+				? fromNodeProviderChain()
+				: fromIni(),
+	});
 }
 
 function getCookieString(req: express.Request) {
@@ -42,8 +42,6 @@ function getCookieString(req: express.Request) {
 
 async function handleImageSigning(
 	config: SignedImageUrlConfig | undefined,
-	getPanda: () => PanDomainAuthentication,
-	req: express.Request,
 	res: express.Response,
 ) {
 	const url = config?.url;
@@ -76,36 +74,36 @@ async function handleImageSigning(
 	}
 }
 
-function withPandaAuth(
-	getPanda: () => PanDomainAuthentication,
+async function withPandaAuth(
+	getPanda: () => Promise<PanDomainAuthentication>,
 	req: express.Request,
 	res: express.Response,
 	onSuccess: (result: AuthenticationResult) => unknown,
 	onFailure: () => unknown,
 ) {
-	const panda = getPanda();
-	panda
-		.verify(getCookieString(req))
-		.then((panAuthResult) => {
-			if (panAuthResult.success) {
-				onSuccess(panAuthResult);
-			} else {
-				onFailure();
-			}
-		})
-		.catch((ex: unknown) => {
-			res.status(500).send({
-				error: 'Pan domain auth error',
-				ex: ex,
-			});
-		})
-		.finally(() => {
-			panda.stop();
+	let panda: PanDomainAuthentication | undefined;
+	let result: AuthenticationResult;
+	try {
+		panda = await getPanda();
+		result = await panda.verify(getCookieString(req));
+	} catch (ex: unknown) {
+		res.status(500).send({
+			error: 'Pan domain auth error',
+			ex: ex,
 		});
+		return;
+	} finally {
+		panda?.stop();
+	}
+	if (result.success) {
+		await onSuccess(result);
+	} else {
+		await onFailure();
+	}
 }
 
 export function buildApp(
-	getPanda: () => PanDomainAuthentication = getPanDomainAuth,
+	getPanda: () => Promise<PanDomainAuthentication> = getPanDomainAuth,
 ): Express {
 	const app = express();
 
@@ -119,14 +117,11 @@ export function buildApp(
 	app.use(jsonBodyParser());
 
 	const uiHandler = (req: express.Request, res: express.Response) => {
-		withPandaAuth(
+		return withPandaAuth(
 			getPanda,
 			req,
 			res,
-			async () => {
-				const panAuthResult = await getPanda().verify(
-					getCookieString(req),
-				);
+			(panAuthResult) => {
 				res.contentType('html').send(getUI(panAuthResult));
 			},
 			() => {
@@ -147,8 +142,6 @@ export function buildApp(
 				async () => {
 					await handleImageSigning(
 						req.body as SignedImageUrlConfig | undefined,
-						getPanda,
-						req,
 						res,
 					);
 				},
@@ -203,7 +196,7 @@ export function buildApp(
 							req.query.quality,
 						);
 					}
-					await handleImageSigning(config, getPanda, req, res);
+					await handleImageSigning(config, res);
 				},
 				() => {
 					res.status(403).send({
